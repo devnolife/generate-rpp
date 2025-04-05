@@ -1,0 +1,175 @@
+import { NextResponse } from "next/server"
+
+export async function GET() {
+  // Simulasi delay untuk menunjukkan loading state
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+
+  const kisiKisiData = {
+    kisi_kisi: {
+      kisi_kisi: {
+        informasi: {
+          nama_sekolah: "Sekolah Menengah Pertama (Nama Sekolah)",
+          mata_pelajaran: "Bahasa Inggris",
+          kelas_semester: "VII",
+          kurikulum: "Merdeka",
+          alokasi_waktu: "90 menit",
+          jumlah_bentuk_soal: "5 Pilihan Ganda, 5 Menjodohkan, 5 Benar-Salah, 2 Essay",
+          penulis: "Guru Bahasa Inggris",
+          tahun_pelajaran: "2024/2025",
+          tempat_tanggal: "Sekolah Menengah Pertama (Nama Sekolah), (Tanggal)",
+        },
+        tabel_kisi_kisi: [
+          {
+            nomor: 1,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan padanan kata profesi dalam Bahasa Inggris.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Pilihan Ganda",
+            nomor_soal: "1",
+          },
+          {
+            nomor: 2,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Memilih profesi yang sesuai dengan gambar.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Pilihan Ganda",
+            nomor_soal: "2",
+          },
+          {
+            nomor: 3,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Mengidentifikasi profesi dari deskripsi singkat.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Pilihan Ganda",
+            nomor_soal: "3",
+          },
+          {
+            nomor: 4,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Mencocokkan profesi dengan definisinya.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Menjodohkan",
+            nomor_soal: "4",
+          },
+          {
+            nomor: 5,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar atau salah pernyataan terkait profesi.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "5",
+          },
+          {
+            nomor: 6,
+            tujuan_pembelajaran:
+              "Peserta didik mampu menuliskan minimal 3 kalimat tentang profesi yang telah dipelajari.",
+            materi: "Kalimat sederhana untuk mendeskripsikan profesi (He is a doctor. She is a teacher.)",
+            indikator_soal: "Membuat kalimat sederhana yang menggambarkan profesi.",
+            level_kognitif: "C3 (Menerapkan)",
+            bentuk_soal: "Essay",
+            nomor_soal: "1",
+          },
+          {
+            nomor: 7,
+            tujuan_pembelajaran:
+              "Peserta didik mampu menuliskan minimal 3 kalimat tentang profesi yang telah dipelajari.",
+            materi: "Kalimat sederhana untuk mendeskripsikan profesi (He is a doctor. She is a teacher.)",
+            indikator_soal: "Menulis paragraf singkat tentang seorang profesional, menjelaskan tugasnya.",
+            level_kognitif: "C3 (Menerapkan)",
+            bentuk_soal: "Essay",
+            nomor_soal: "2",
+          },
+          {
+            nomor: 8,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Mengurutkan kata profesi berdasarkan abjad.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Menjodohkan",
+            nomor_soal: "1",
+          },
+          {
+            nomor: 9,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Mencocokkan gambar dengan kata profesi.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Menjodohkan",
+            nomor_soal: "2",
+          },
+          {
+            nomor: 10,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar salah pernyataan terkait pekerjaan.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "1",
+          },
+          {
+            nomor: 11,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar salah penulisan kata profesi.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "2",
+          },
+          {
+            nomor: 12,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar salah  deskripsi singkat pekerjaan.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "3",
+          },
+          {
+            nomor: 13,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar salah terkait alat yang digunakan dalam sebuah pekerjaan.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "4",
+          },
+          {
+            nomor: 14,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menentukan benar salah terkait tempat kerja profesi tertentu.",
+            level_kognitif: "C2 (Memahami)",
+            bentuk_soal: "Benar-Salah",
+            nomor_soal: "5",
+          },
+          {
+            nomor: 15,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menyebutkan 5 profesi dalam Bahasa Inggris.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Pilihan Ganda",
+            nomor_soal: "4",
+          },
+          {
+            nomor: 16,
+            tujuan_pembelajaran: "Peserta didik mampu menyebutkan minimal 5 profesi dalam Bahasa Inggris dengan benar.",
+            materi: "Kosakata profesi dalam Bahasa Inggris (doctor, teacher, engineer, pilot, nurse, etc.)",
+            indikator_soal: "Menyebutkan 5 profesi dalam Bahasa Inggris.",
+            level_kognitif: "C1 (Mengingat)",
+            bentuk_soal: "Pilihan Ganda",
+            nomor_soal: "5",
+          },
+        ],
+      },
+    },
+  }
+
+  return NextResponse.json(kisiKisiData)
+}
+
