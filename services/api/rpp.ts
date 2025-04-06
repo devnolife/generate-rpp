@@ -1,5 +1,15 @@
-import { RPPFormData, RPPResponse, KisiKisiResponse, SoalResponse } from '@/types/rpp';
+import { FormData as RPPFormData, RPPResponse, KisiKisiResponse, SoalResponse } from '@/types/rpp';
 import { apiClient } from './config';
+
+/**
+ * Helper to simulate API delay in development mode
+ */
+const mockDelay = async (): Promise<void> => {
+  const delay = parseInt(process.env.NEXT_PUBLIC_MOCK_API_DELAY || '0', 10);
+  if (delay > 0) {
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+};
 
 /**
  * RPP API service that handles all RPP-related API calls
@@ -12,6 +22,7 @@ export const RPPService = {
    */
   generateRPP: async (formData: RPPFormData): Promise<RPPResponse> => {
     try {
+      await mockDelay(); // Add mock delay in development
       const response = await apiClient.post<RPPResponse>(
         '/education/generate-rpp',
         formData
@@ -30,6 +41,7 @@ export const RPPService = {
    */
   generateKisiKisi: async (formData: RPPFormData): Promise<KisiKisiResponse> => {
     try {
+      await mockDelay(); // Add mock delay in development
       const response = await apiClient.post<KisiKisiResponse>(
         '/education/generate-rpp/kisi-kisi',
         formData
@@ -48,6 +60,7 @@ export const RPPService = {
    */
   generateSoal: async (formData: RPPFormData): Promise<SoalResponse> => {
     try {
+      await mockDelay(); // Add mock delay in development
       const response = await apiClient.post<SoalResponse>(
         '/education/generate-rpp/soal',
         formData

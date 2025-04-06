@@ -2,8 +2,7 @@
  * RPP (Rencana Pelaksanaan Pembelajaran) related types
  */
 
-export interface RPPFormData {
-  // Required fields
+export interface FormData {
   nama_penyusun: string;
   institusi: string;
   tahun_pembuatan: string;
@@ -12,13 +11,10 @@ export interface RPPFormData {
   kelas: string;
   fase?: string;
   alokasi_waktu: string;
-  tahapan: string;
-  capaian_pembelajaran: string;
+  capaian_pembelajaran?: string;
   domain_konten: string;
   tujuan_pembelajaran: string;
   konten_utama: string;
-
-  // Optional fields
   prasyarat?: string;
   pemahaman_bermakna?: string;
   profil_pelajar?: string;
@@ -31,40 +27,43 @@ export interface RPPFormData {
 }
 
 export interface RPPResponse {
-  identitas: {
-    nama_penyusun: string;
-    institusi: string;
-    tahun_pembuatan: string;
-    mata_pelajaran: string;
-    jenjang: string;
-    kelas: string;
-    fase: string;
-    alokasi_waktu: string;
-  };
-  konten: {
-    tahapan: string;
-    capaian_pembelajaran: string;
-    domain_konten: string;
-    tujuan_pembelajaran: string;
-    konten_utama: string;
-    prasyarat?: string;
-    pemahaman_bermakna?: string;
-    profil_pelajar?: string;
-    sarana?: string;
-    target_peserta?: string;
-    jumlah_peserta?: string;
-    model_pembelajaran?: string;
-    sumber_belajar?: string;
-    catatan?: string;
-  };
-  kegiatan_pembelajaran: Array<{
-    nama: string;
-    langkah: string[];
-    estimasi_waktu: string;
-  }>;
-  penilaian: {
-    teknik: string;
-    instrumen: string;
+  status: string;
+  message: string;
+  rpp: {
+    identitas: {
+      nama_penyusun: string;
+      institusi: string;
+      tahun_pembuatan: string;
+      mata_pelajaran: string;
+      jenjang: string;
+      kelas: string;
+      fase: string;
+      alokasi_waktu: string;
+    };
+    konten: {
+      capaian_pembelajaran: string;
+      domain_konten: string;
+      tujuan_pembelajaran: string;
+      konten_utama: string;
+      prasyarat: string;
+      pemahaman_bermakna: string;
+      profil_pelajar: string;
+      sarana: string;
+      target_peserta: string;
+      jumlah_peserta: string;
+      model_pembelajaran: string;
+      sumber_belajar: string;
+      catatan: string;
+    };
+    kegiatan_pembelajaran: Array<{
+      nama: string;
+      langkah: string[];
+      estimasi_waktu: string;
+    }>;
+    penilaian: {
+      teknik: string;
+      instrumen: string;
+    };
   };
 }
 

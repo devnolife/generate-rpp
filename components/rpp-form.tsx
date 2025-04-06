@@ -51,13 +51,12 @@ const formSchema = z.object({
   kelas: z.string().min(1, { message: "Kelas harus diisi" }),
   fase: z.string().optional(),
   alokasi_waktu: z.string().min(1, { message: "Alokasi waktu harus diisi" }),
-  tahapan: z.string().min(2, { message: "Tahapan harus diisi" }),
-  capaian_pembelajaran: z.string().min(2, { message: "Capaian pembelajaran harus diisi" }),
   domain_konten: z.string().min(2, { message: "Domain konten harus diisi" }),
   tujuan_pembelajaran: z.string().min(2, { message: "Tujuan pembelajaran harus diisi" }),
   konten_utama: z.string().min(2, { message: "Konten utama harus diisi" }),
 
   // Optional fields
+  capaian_pembelajaran: z.string().optional(),
   prasyarat: z.string().optional(),
   pemahaman_bermakna: z.string().optional(),
   profil_pelajar: z.string().optional(),
@@ -87,11 +86,10 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
       kelas: "",
       fase: "",
       alokasi_waktu: "",
-      tahapan: "",
-      capaian_pembelajaran: "",
       domain_konten: "",
       tujuan_pembelajaran: "",
       konten_utama: "",
+      capaian_pembelajaran: "",
       prasyarat: "",
       pemahaman_bermakna: "",
       profil_pelajar: "",
@@ -671,44 +669,6 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="tahapan"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center mb-2">
-                            <FormLabel className="text-gray-700 font-medium">Tahapan *</FormLabel>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
-                                    <HelpCircle className="h-4 w-4" />
-                                    <span className="sr-only">Info</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="w-80 text-sm">
-                                    Masukkan tahapan pembelajaran (contoh: Pendahuluan, Inti, Penutup).
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                          <FormControl>
-                            <div className="relative">
-                              <Layers className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                              <Input
-                                placeholder="Masukkan tahapan pembelajaran"
-                                {...field}
-                                className="pl-10 py-6 rounded-xl border-gray-300 focus-visible:ring-primary bg-white/70 backdrop-blur-sm"
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage className="text-red-500 text-xs mt-1" />
-                        </FormItem>
-                      )}
-                    />
                   </div>
 
                   <div className="flex justify-between pt-4">
@@ -752,44 +712,6 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="capaian_pembelajaran"
-                      render={({ field }) => (
-                        <FormItem>
-                          <div className="flex items-center mb-2">
-                            <FormLabel className="text-gray-700 font-medium">Capaian Pembelajaran *</FormLabel>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
-                                    <HelpCircle className="h-4 w-4" />
-                                    <span className="sr-only">Info</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="w-80 text-sm">
-                                    Masukkan capaian pembelajaran yang diharapkan dari siswa.
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                          <FormControl>
-                            <div className="relative">
-                              <Target className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                              <Textarea
-                                placeholder="Masukkan capaian pembelajaran..."
-                                className="min-h-[120px] pl-10 pt-2 rounded-xl border-gray-300 focus-visible:ring-primary resize-none bg-white/70 backdrop-blur-sm"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage className="text-red-500 text-xs mt-1" />
-                        </FormItem>
-                      )}
-                    />
-
                     <FormField
                       control={form.control}
                       name="domain_konten"
@@ -950,6 +872,46 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                              control={form.control}
+                              name="capaian_pembelajaran"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <div className="flex items-center mb-2">
+                                    <FormLabel className="text-gray-700 font-medium">Capaian Pembelajaran</FormLabel>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
+                                            <HelpCircle className="h-4 w-4" />
+                                            <span className="sr-only">Info</span>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="w-80 text-sm">
+                                            Masukkan capaian pembelajaran yang diharapkan dari siswa.
+                                          </p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                  <FormControl>
+                                    <div className="group relative transition-all duration-300">
+                                      <div className="absolute left-0 top-0 h-full w-1 bg-primary-lightest rounded-l-xl group-focus-within:bg-primary-light transition-colors"></div>
+                                      <div className="relative">
+                                        <Target className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-focus-within:text-primary-light transition-colors" />
+                                        <Textarea
+                                          placeholder="Masukkan capaian pembelajaran..."
+                                          className="min-h-[120px] pl-10 pt-2 rounded-xl border-gray-200 focus-visible:ring-primary-light focus-visible:border-transparent shadow-sm resize-none bg-white/70 backdrop-blur-sm"
+                                          {...field}
+                                        />
+                                      </div>
+                                    </div>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+
                             <FormField
                               control={form.control}
                               name="prasyarat"

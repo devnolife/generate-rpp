@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     const requiredFields = [
       'nama_penyusun', 'institusi', 'tahun_pembuatan', 'mata_pelajaran',
-      'jenjang', 'kelas', 'alokasi_waktu', 'tahapan', 'domain_konten',
-      'tujuan_pembelajaran', 'konten_utama', 'capaian_pembelajaran'
+      'jenjang', 'kelas', 'alokasi_waktu', 'domain_konten',
+      'tujuan_pembelajaran', 'konten_utama'
     ];
 
     for (const field of requiredFields) {
@@ -36,24 +36,23 @@ export async function POST(req: NextRequest) {
         mata_pelajaran: formData.mata_pelajaran,
         jenjang: formData.jenjang,
         kelas: formData.kelas,
-        fase: formData.fase,
+        fase: formData.fase || "",
         alokasi_waktu: formData.alokasi_waktu,
       },
       konten: {
-        tahapan: formData.tahapan,
-        capaian_pembelajaran: formData.capaian_pembelajaran,
+        capaian_pembelajaran: formData.capaian_pembelajaran || "",
         domain_konten: formData.domain_konten,
         tujuan_pembelajaran: formData.tujuan_pembelajaran,
         konten_utama: formData.konten_utama,
-        prasyarat: formData.prasyarat,
-        pemahaman_bermakna: formData.pemahaman_bermakna,
-        profil_pelajar: formData.profil_pelajar,
-        sarana: formData.sarana,
-        target_peserta: formData.target_peserta,
-        jumlah_peserta: formData.jumlah_peserta,
-        model_pembelajaran: formData.model_pembelajaran,
-        sumber_belajar: formData.sumber_belajar,
-        catatan: formData.catatan,
+        prasyarat: formData.prasyarat || "",
+        pemahaman_bermakna: formData.pemahaman_bermakna || "",
+        profil_pelajar: formData.profil_pelajar || "",
+        sarana: formData.sarana || "",
+        target_peserta: formData.target_peserta || "",
+        jumlah_peserta: formData.jumlah_peserta || "",
+        model_pembelajaran: formData.model_pembelajaran || "",
+        sumber_belajar: formData.sumber_belajar || "",
+        catatan: formData.catatan || ""
       },
       kegiatan_pembelajaran: [
         {

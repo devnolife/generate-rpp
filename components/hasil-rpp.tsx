@@ -46,7 +46,6 @@ export interface RPPData {
       "Jenjang": string;
       "Kelas": string;
       "Alokasi Waktu": string;
-      "Tahapan": string;
     };
     "KOMPONEN PEMBELAJARAN": {
       "Capaian Pembelajaran (CP)": string;
