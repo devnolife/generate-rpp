@@ -107,7 +107,7 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
   const kelas = form.watch("kelas")
 
   useEffect(() => {
-    if (jenjang === "Elementary School") {
+    if (jenjang === "Sekolah Dasar") {
       setClassOptions([
         { value: "1", label: "Kelas 1" },
         { value: "2", label: "Kelas 2" },
@@ -122,7 +122,7 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
         form.setValue("kelas", "")
         form.setValue("fase", "")
       }
-    } else if (jenjang === "Middle School") {
+    } else if (jenjang === "Sekolah Menengah Pertama") {
       setClassOptions([
         { value: "7", label: "Kelas 7" },
         { value: "8", label: "Kelas 8" },
@@ -134,7 +134,7 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
         form.setValue("kelas", "")
         form.setValue("fase", "")
       }
-    } else if (jenjang === "High School/Vocational School") {
+    } else if (jenjang === "Sekolah Menengah Atas/Kejuruan") {
       setClassOptions([
         { value: "10", label: "Kelas 10" },
         { value: "11", label: "Kelas 11" },
@@ -156,7 +156,7 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
       const kelasNum = Number.parseInt(kelas)
       let fase = ""
 
-      if (jenjang === "Elementary School") {
+      if (jenjang === "Sekolah Dasar") {
         if (kelasNum >= 1 && kelasNum <= 2) {
           fase = "Fase A (SD Kelas 1-2)"
         } else if (kelasNum >= 3 && kelasNum <= 4) {
@@ -164,9 +164,9 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
         } else if (kelasNum >= 5 && kelasNum <= 6) {
           fase = "Fase C (SD Kelas 5-6)"
         }
-      } else if (jenjang === "Middle School") {
+      } else if (jenjang === "Sekolah Menengah Pertama") {
         fase = "Fase D (SMP Kelas 7-9)"
-      } else if (jenjang === "High School/Vocational School") {
+      } else if (jenjang === "Sekolah Menengah Atas/Kejuruan") {
         if (kelasNum === 10) {
           fase = "Fase E (SMA Kelas 10)"
         } else if (kelasNum >= 11 && kelasNum <= 12) {
@@ -184,22 +184,18 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
       console.log(values)
       onSubmit(values)
       toast({
-        title: "RPP berhasil disimpan! 🎉",
-        description: "Dokumen RPP Anda telah berhasil disimpan.",
-        className: "bg-primary text-white border-none",
+        title: "Mengirim Data RPP",
+        description: "RPP Anda sedang diproses...",
+        className: "bg-primary-lightest text-primary border-none",
       })
     } catch (error) {
       console.error("Error submitting form:", error)
       toast({
-        title: "Gagal menyimpan RPP",
-        description: "Terjadi kesalahan saat menyimpan. Silakan coba lagi.",
+        title: "Gagal mengirim data",
+        description: "Terjadi kesalahan saat mengirim data. Silakan coba lagi.",
         variant: "destructive",
       })
-    } finally {
-      // Keep loading state for a bit to ensure user sees feedback
-      setTimeout(() => {
-        setIsSubmitting(false)
-      }, 1000)
+      setIsSubmitting(false)
     }
   }
 
@@ -516,9 +512,9 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
                                   <SelectValue placeholder="Pilih jenjang pendidikan" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-xl">
-                                  <SelectItem value="Elementary School">Sekolah Dasar (SD)</SelectItem>
-                                  <SelectItem value="Middle School">Sekolah Menengah Pertama (SMP)</SelectItem>
-                                  <SelectItem value="High School/Vocational School">
+                                  <SelectItem value="Sekolah Dasar">Sekolah Dasar (SD)</SelectItem>
+                                  <SelectItem value="Sekolah Menengah Pertama">Sekolah Menengah Pertama (SMP)</SelectItem>
+                                  <SelectItem value="Sekolah Menengah Atas/Kejuruan">
                                     Sekolah Menengah Atas/Kejuruan (SMA/SMK)
                                   </SelectItem>
                                 </SelectContent>
@@ -1255,7 +1251,7 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
                       {isSubmitting ? (
                         <>
                           <div className="h-5 w-5 relative z-10 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span className="font-medium relative z-10">Membuat...</span>
+                          <span className="font-medium relative z-10">Membuat RPP...</span>
                         </>
                       ) : (
                         <>

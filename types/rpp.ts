@@ -2,29 +2,41 @@
  * RPP (Rencana Pelaksanaan Pembelajaran) related types
  */
 
-export interface FormData {
-  nama_penyusun: string;
-  institusi: string;
-  tahun_pembuatan: string;
-  mata_pelajaran: string;
-  jenjang: string;
-  kelas: string;
-  fase?: string;
-  alokasi_waktu: string;
-  capaian_pembelajaran?: string;
-  domain_konten: string;
-  tujuan_pembelajaran: string;
-  konten_utama: string;
-  prasyarat?: string;
-  pemahaman_bermakna?: string;
-  profil_pelajar?: string;
-  sarana?: string;
-  target_peserta?: string;
-  jumlah_peserta?: string;
-  model_pembelajaran?: string;
-  sumber_belajar?: string;
-  catatan?: string;
-}
+import * as z from "zod";
+
+// Define the form schema to match what's in rpp-form.tsx
+const formSchema = z.object({
+  // Required fields
+  nama_penyusun: z.string().min(2, { message: "Nama penyusun harus diisi" }),
+  institusi: z.string().min(2, { message: "Institusi harus diisi" }),
+  tahun_pembuatan: z.string().min(4, { message: "Tahun pembuatan harus diisi" }),
+  mata_pelajaran: z.string().min(2, { message: "Mata pelajaran harus diisi" }),
+  jenjang: z.string().min(2, { message: "Jenjang harus diisi" }),
+  kelas: z.string().min(1, { message: "Kelas harus diisi" }),
+  fase: z.string().optional(),
+  alokasi_waktu: z.string().min(1, { message: "Alokasi waktu harus diisi" }),
+  domain_konten: z.string().min(2, { message: "Domain konten harus diisi" }),
+  tujuan_pembelajaran: z.string().min(2, { message: "Tujuan pembelajaran harus diisi" }),
+  konten_utama: z.string().min(2, { message: "Konten utama harus diisi" }),
+
+  // Optional fields
+  capaian_pembelajaran: z.string().optional(),
+  prasyarat: z.string().optional(),
+  pemahaman_bermakna: z.string().optional(),
+  profil_pelajar: z.string().optional(),
+  sarana: z.string().optional(),
+  target_peserta: z.string().optional(),
+  jumlah_peserta: z.string().optional(),
+  model_pembelajaran: z.string().optional(),
+  sumber_belajar: z.string().optional(),
+  catatan: z.string().optional(),
+});
+
+// Export the FormData type inferred from the schema
+export type FormData = z.infer<typeof formSchema>;
+
+// Export the schema if needed elsewhere
+export { formSchema };
 
 export interface RPPResponse {
   status: string;
@@ -68,38 +80,71 @@ export interface RPPResponse {
 }
 
 export interface KisiKisiResponse {
-  identitas: {
+  status: string;
+  message: string;
+  kisi_kisi: {
     mata_pelajaran: string;
-    jenjang: string;
     kelas: string;
-    alokasi_waktu: string;
+    materi: string;
+    kisi_kisi: Array<{
+      nomor: number;
+      tujuan_pembelajaran: string;
+      materi: string;
+      indikator_soal: string;
+      level_kognitif: string;
+      bentuk_soal: string;
+      nomor_soal: number;
+    }>;
   };
-  kompetensi_dasar: string[];
-  materi_pokok: string;
-  indikator: string[];
-  level_kognitif: Array<{
-    level: string;
-    deskripsi: string;
-  }>;
 }
 
 export interface SoalResponse {
-  identitas: {
-    mata_pelajaran: string;
-    jenjang: string;
-    kelas: string;
+  status: string;
+  message: string;
+  questions: {
+    soal_bahasa_inggris: {
+      judul: string;
+      kelas: string;
+      identitas: {
+        nama_sekolah: string;
+        mata_pelajaran: string;
+        alokasi_waktu: string;
+        petunjuk: string;
+      };
+      pilihan_ganda: Array<{
+        nomor: number;
+        paragraf: string;
+        pertanyaan: string;
+        pilihan: {
+          A: string;
+          B: string;
+          C: string;
+          D: string;
+        };
+        kunci_jawaban: string;
+      }>;
+      menjodohkan: {
+        petunjuk: string;
+        soal: Array<{
+          nomor: number;
+          kolom_a: string;
+          kolom_b: string;
+        }>;
+      };
+      benar_salah: Array<{
+        nomor: number;
+        terkait_paragraf: number;
+        pernyataan: string;
+        kunci_jawaban: boolean;
+      }>;
+      essay: Array<{
+        nomor: number;
+        terkait_paragraf: number;
+        pertanyaan: string;
+        panduan_jawaban: string;
+      }>;
+    };
   };
-  soal_pg: Array<{
-    pertanyaan: string;
-    pilihan: string[];
-    kunci_jawaban: string;
-    pembahasan: string;
-  }>;
-  soal_esai: Array<{
-    pertanyaan: string;
-    kunci_jawaban: string;
-    pembahasan: string;
-  }>;
 }
 
 // Re-export for convenience

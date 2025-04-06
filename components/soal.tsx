@@ -29,6 +29,8 @@ import { Badge } from "@/components/ui/badge"
 
 // Definisikan tipe data untuk Soal
 export interface SoalData {
+  status: string;
+  message: string;
   questions: {
     soal_bahasa_inggris: {
       judul: string
@@ -542,18 +544,16 @@ export function Soal({ data }: SoalProps) {
                               {Object.entries(item.pilihan).map(([key, value]) => (
                                 <div
                                   key={key}
-                                  className={`flex items-center gap-3 p-3 rounded-lg border ${
-                                    showAnswers && key === item.kunci_jawaban
+                                  className={`flex items-center gap-3 p-3 rounded-lg border ${showAnswers && key === item.kunci_jawaban
                                       ? "border-green-200 bg-green-50"
                                       : "border-gray-200 hover:bg-gray-50"
-                                  }`}
+                                    }`}
                                 >
                                   <div
-                                    className={`flex items-center justify-center w-6 h-6 rounded-full ${
-                                      showAnswers && key === item.kunci_jawaban
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full ${showAnswers && key === item.kunci_jawaban
                                         ? "bg-green-100 text-green-600"
                                         : "bg-gray-100 text-gray-600"
-                                    } font-semibold text-sm`}
+                                      } font-semibold text-sm`}
                                   >
                                     {key}
                                   </div>
@@ -713,42 +713,36 @@ export function Soal({ data }: SoalProps) {
 
                               <div className="flex flex-wrap gap-3 mt-3">
                                 <div
-                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-                                    showAnswers && item.kunci_jawaban === true
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showAnswers && item.kunci_jawaban === true
                                       ? "border-green-200 bg-green-50"
                                       : "border-gray-200"
-                                  }`}
+                                    }`}
                                 >
                                   <div
-                                    className={`flex items-center justify-center w-5 h-5 rounded-full ${
-                                      showAnswers && item.kunci_jawaban === true ? "bg-green-100" : "bg-gray-100"
-                                    }`}
+                                    className={`flex items-center justify-center w-5 h-5 rounded-full ${showAnswers && item.kunci_jawaban === true ? "bg-green-100" : "bg-gray-100"
+                                      }`}
                                   >
                                     <Check
-                                      className={`h-3 w-3 ${
-                                        showAnswers && item.kunci_jawaban === true ? "text-green-600" : "text-gray-500"
-                                      }`}
+                                      className={`h-3 w-3 ${showAnswers && item.kunci_jawaban === true ? "text-green-600" : "text-gray-500"
+                                        }`}
                                     />
                                   </div>
                                   <span className="text-gray-700">Benar</span>
                                 </div>
 
                                 <div
-                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-                                    showAnswers && item.kunci_jawaban === false
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${showAnswers && item.kunci_jawaban === false
                                       ? "border-green-200 bg-green-50"
                                       : "border-gray-200"
-                                  }`}
+                                    }`}
                                 >
                                   <div
-                                    className={`flex items-center justify-center w-5 h-5 rounded-full ${
-                                      showAnswers && item.kunci_jawaban === false ? "bg-green-100" : "bg-gray-100"
-                                    }`}
+                                    className={`flex items-center justify-center w-5 h-5 rounded-full ${showAnswers && item.kunci_jawaban === false ? "bg-green-100" : "bg-gray-100"
+                                      }`}
                                   >
                                     <X
-                                      className={`h-3 w-3 ${
-                                        showAnswers && item.kunci_jawaban === false ? "text-green-600" : "text-gray-500"
-                                      }`}
+                                      className={`h-3 w-3 ${showAnswers && item.kunci_jawaban === false ? "text-green-600" : "text-gray-500"
+                                        }`}
                                     />
                                   </div>
                                   <span className="text-gray-700">Salah</span>

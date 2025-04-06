@@ -30,30 +30,22 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // Definisikan tipe data untuk Kisi-Kisi
 export interface KisiKisiData {
+  status: string;
+  message: string;
   kisi_kisi: {
-    kisi_kisi: {
-      informasi: {
-        nama_sekolah: string
-        mata_pelajaran: string
-        kelas_semester: string
-        kurikulum: string
-        alokasi_waktu: string
-        jumlah_bentuk_soal: string
-        penulis: string
-        tahun_pelajaran: string
-        tempat_tanggal: string
-      }
-      tabel_kisi_kisi: Array<{
-        nomor: number
-        tujuan_pembelajaran: string
-        materi: string
-        indikator_soal: string
-        level_kognitif: string
-        bentuk_soal: string
-        nomor_soal: string
-      }>
-    }
-  }
+    mata_pelajaran: string;
+    kelas: string;
+    materi: string;
+    kisi_kisi: Array<{
+      nomor: number;
+      tujuan_pembelajaran: string;
+      materi: string;
+      indikator_soal: string;
+      level_kognitif: string;
+      bentuk_soal: string;
+      nomor_soal: number;
+    }>;
+  };
 }
 
 interface KisiKisiProps {
@@ -164,8 +156,8 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
         }
 
         // Unduh PDF
-        const kisiKisi = data?.kisi_kisi.kisi_kisi
-        const fileName = `Kisi_Kisi_${kisiKisi?.informasi.mata_pelajaran}_${kisiKisi?.informasi.kelas_semester}_${new Date().toISOString().split("T")[0]}.pdf`
+        const kisiKisiData = data?.kisi_kisi
+        const fileName = `Kisi_Kisi_${kisiKisiData?.mata_pelajaran}_Kelas_${kisiKisiData?.kelas}_${new Date().toISOString().split("T")[0]}.pdf`
         pdf.save(fileName)
 
         toast({
@@ -191,8 +183,8 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
       // Jika Web Share API tersedia
       if (navigator.share) {
         await navigator.share({
-          title: `Kisi-Kisi ${data?.kisi_kisi.kisi_kisi.informasi.mata_pelajaran}`,
-          text: `Kisi-Kisi ${data?.kisi_kisi.kisi_kisi.informasi.mata_pelajaran} untuk Kelas ${data?.kisi_kisi.kisi_kisi.informasi.kelas_semester}`,
+          title: `Kisi-Kisi ${data?.kisi_kisi.mata_pelajaran}`,
+          text: `Kisi-Kisi ${data?.kisi_kisi.mata_pelajaran} untuk Kelas ${data?.kisi_kisi.kelas}`,
           url: window.location.href,
         })
         setIsSharing(false)
@@ -237,27 +229,28 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
     )
   }
 
-  const kisiKisi = data.kisi_kisi.kisi_kisi
+  const kisiKisiData = data.kisi_kisi;
+  const kisiKisiItems = data.kisi_kisi.kisi_kisi;
 
   // Mendapatkan daftar unik bentuk soal dan level kognitif untuk filter
-  const uniqueBentukSoal = Array.from(new Set(kisiKisi.tabel_kisi_kisi.map((item) => item.bentuk_soal)))
-  const uniqueLevelKognitif = Array.from(new Set(kisiKisi.tabel_kisi_kisi.map((item) => item.level_kognitif)))
+  const uniqueBentukSoal = Array.from(new Set(kisiKisiItems.map((item) => item.bentuk_soal)));
+  const uniqueLevelKognitif = Array.from(new Set(kisiKisiItems.map((item) => item.level_kognitif)));
 
   // Filter data tabel berdasarkan bentuk soal dan level kognitif
-  const filteredData = kisiKisi.tabel_kisi_kisi.filter((item) => {
-    const bentukSoalMatch = activeTab === "semua" || item.bentuk_soal === activeTab
-    const levelKognitifMatch = filterLevelKognitif === "semua" || item.level_kognitif === filterLevelKognitif
-    return bentukSoalMatch && levelKognitifMatch
-  })
+  const filteredData = kisiKisiItems.filter((item) => {
+    const bentukSoalMatch = activeTab === "semua" || item.bentuk_soal === activeTab;
+    const levelKognitifMatch = filterLevelKognitif === "semua" || item.level_kognitif === filterLevelKognitif;
+    return bentukSoalMatch && levelKognitifMatch;
+  });
 
   // Mendapatkan statistik bentuk soal
-  const bentukSoalStats = kisiKisi.tabel_kisi_kisi.reduce(
+  const bentukSoalStats = kisiKisiItems.reduce(
     (acc, item) => {
-      acc[item.bentuk_soal] = (acc[item.bentuk_soal] || 0) + 1
-      return acc
+      acc[item.bentuk_soal] = (acc[item.bentuk_soal] || 0) + 1;
+      return acc;
     },
     {} as Record<string, number>,
-  )
+  );
 
   // Tambahkan tombol di bagian bawah komponen
   return (
@@ -268,9 +261,9 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="h-6 w-6 text-[#FFEB00]" />
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Kisi-Kisi {kisiKisi.informasi.mata_pelajaran}</h2>
+              <h2 className="text-xl font-bold text-gray-800">Kisi-Kisi {kisiKisiData.mata_pelajaran}</h2>
               <p className="text-sm text-gray-500">
-                Kelas {kisiKisi.informasi.kelas_semester} - {kisiKisi.informasi.kurikulum}
+                Kelas {kisiKisiData.kelas} - {kisiKisiData.materi}
               </p>
             </div>
           </div>
@@ -350,79 +343,37 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex gap-3">
-                      <School className="h-5 w-5 text-[#4379F2]" />
-                      <div>
-                        <p className="text-sm text-gray-500">Nama Sekolah</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.nama_sekolah}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3">
                       <BookOpen className="h-5 w-5 text-[#FFEB00]" />
                       <div>
                         <p className="text-sm text-gray-500">Mata Pelajaran</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.mata_pelajaran}</p>
+                        <p className="font-medium text-gray-800">{kisiKisiData.mata_pelajaran}</p>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
-                      <BookCopy className="h-5 w-5 text-[#6EC207]" />
+                      <Calendar className="h-5 w-5 text-[#4379F2]" />
                       <div>
-                        <p className="text-sm text-gray-500">Kurikulum</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.kurikulum}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <User className="h-5 w-5 text-[#117554]" />
-                      <div>
-                        <p className="text-sm text-gray-500">Penulis</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.penulis}</p>
+                        <p className="text-sm text-gray-500">Kelas</p>
+                        <p className="font-medium text-gray-800">Kelas {kisiKisiData.kelas}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex gap-3">
-                      <Calendar className="h-5 w-5 text-[#4379F2]" />
+                      <BookCopy className="h-5 w-5 text-[#6EC207]" />
                       <div>
-                        <p className="text-sm text-gray-500">Kelas/Semester</p>
-                        <p className="font-medium text-gray-800">Kelas {kisiKisi.informasi.kelas_semester}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <Clock className="h-5 w-5 text-[#FFEB00]" />
-                      <div>
-                        <p className="text-sm text-gray-500">Alokasi Waktu</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.alokasi_waktu}</p>
+                        <p className="text-sm text-gray-500">Materi</p>
+                        <p className="font-medium text-gray-800">{kisiKisiData.materi}</p>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
                       <FileText className="h-5 w-5 text-[#6EC207]" />
                       <div>
-                        <p className="text-sm text-gray-500">Jumlah & Bentuk Soal</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.jumlah_bentuk_soal}</p>
+                        <p className="text-sm text-gray-500">Jumlah Soal</p>
+                        <p className="font-medium text-gray-800">{kisiKisiItems.length} Soal</p>
                       </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <Calendar className="h-5 w-5 text-[#117554]" />
-                      <div>
-                        <p className="text-sm text-gray-500">Tahun Pelajaran</p>
-                        <p className="font-medium text-gray-800">{kisiKisi.informasi.tahun_pelajaran}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="flex gap-3">
-                    <Calendar className="h-5 w-5 text-[#117554]" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tempat dan Tanggal</p>
-                      <p className="font-medium text-gray-800">{kisiKisi.informasi.tempat_tanggal}</p>
                     </div>
                   </div>
                 </div>
@@ -596,7 +547,7 @@ export function KisiKisi({ data, onGenerateSoal }: KisiKisiProps) {
                 {/* Ringkasan */}
                 <div className="mt-6 bg-gray-50 p-4 rounded-xl">
                   <p className="text-sm text-gray-600">
-                    Menampilkan {filteredData.length} dari {kisiKisi.tabel_kisi_kisi.length} kisi-kisi soal
+                    Menampilkan {filteredData.length} dari {kisiKisiItems.length} kisi-kisi soal
                     {activeTab !== "semua" && ` dengan bentuk soal "${activeTab}"`}
                     {filterLevelKognitif !== "semua" && ` dan level kognitif "${filterLevelKognitif}"`}.
                   </p>

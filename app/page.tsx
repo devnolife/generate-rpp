@@ -13,11 +13,18 @@ import { KisiKisiSkeleton } from "@/components/skeletons/kisi-kisi-skeleton"
 import { SoalSkeleton } from "@/components/skeletons/soal-skeleton"
 import { toast } from "@/components/ui/use-toast"
 import { RPPService } from "@/services/api/rpp"
-import { RPPFormData } from "@/types/rpp"
+import { FormData as RPPFormData } from "@/types/rpp"
 import { configureAxios } from "@/services/api/config"
 
 // Configure axios
 configureAxios();
+
+// Define mapping for jenjang values (if needed for processing/display)
+const jenjangMapping = {
+  "Sekolah Dasar": "SD",
+  "Sekolah Menengah Pertama": "SMP",
+  "Sekolah Menengah Atas/Kejuruan": "SMA/SMK"
+};
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("buat-rpp")
@@ -48,17 +55,28 @@ export default function Home() {
     setFormData(data);
     setIsLoadingRPP(true);
 
+    toast({
+      title: "Memproses Data RPP",
+      description: "Sedang membuat RPP. Mohon tunggu sebentar...",
+      className: "bg-primary-lightest text-primary border-none",
+    });
+
     RPPService.generateRPP(data)
       .then(response => {
         setRppData(response as unknown as RPPData);
-        setIsRPPSubmitted(true);
+        setIsRPPSubmitted(!!response);
         setActiveTab("hasil-generate");
+        toast({
+          title: "Berhasil!",
+          description: "RPP berhasil dibuat. Anda dapat melihat hasilnya sekarang.",
+          className: "bg-green-100 text-green-800 border-green-200",
+        });
       })
       .catch(error => {
         console.error("Error submitting RPP data:", error);
         toast({
-          title: "Error",
-          description: "Gagal mengirim data RPP. Silakan coba lagi nanti.",
+          title: "Gagal Membuat RPP",
+          description: error.message || "Gagal mengirim data RPP. Silakan coba lagi nanti.",
           variant: "destructive",
         });
       })
@@ -72,17 +90,29 @@ export default function Home() {
     if (!formData) return;
 
     setIsLoadingKisiKisi(true);
+
+    toast({
+      title: "Membuat Kisi-Kisi",
+      description: "Sedang membuat kisi-kisi berdasarkan RPP. Mohon tunggu...",
+      className: "bg-amber-50 text-amber-800 border-amber-200",
+    });
+
     RPPService.generateKisiKisi(formData)
       .then(response => {
         setKisiKisiData(response as unknown as KisiKisiData);
-        setIsKisiKisiGenerated(true);
+        setIsKisiKisiGenerated(!!response);
         setActiveTab("kisi-kisi");
+        toast({
+          title: "Berhasil!",
+          description: "Kisi-kisi berhasil dibuat.",
+          className: "bg-amber-100 text-amber-800 border-amber-200",
+        });
       })
       .catch(error => {
         console.error("Error generating Kisi-Kisi:", error);
         toast({
-          title: "Error",
-          description: "Gagal membuat Kisi-Kisi. Silakan coba lagi nanti.",
+          title: "Gagal Membuat Kisi-Kisi",
+          description: error.message || "Gagal membuat Kisi-Kisi. Silakan coba lagi nanti.",
           variant: "destructive",
         });
       })
@@ -96,17 +126,29 @@ export default function Home() {
     if (!formData) return;
 
     setIsLoadingSoal(true);
+
+    toast({
+      title: "Membuat Soal",
+      description: "Sedang membuat soal berdasarkan kisi-kisi. Mohon tunggu...",
+      className: "bg-blue-50 text-blue-800 border-blue-200",
+    });
+
     RPPService.generateSoal(formData)
       .then(response => {
         setSoalData(response as unknown as SoalData);
-        setIsSoalGenerated(true);
+        setIsSoalGenerated(!!response);
         setActiveTab("soal");
+        toast({
+          title: "Berhasil!",
+          description: "Soal berhasil dibuat.",
+          className: "bg-blue-100 text-blue-800 border-blue-200",
+        });
       })
       .catch(error => {
         console.error("Error generating Soal:", error);
         toast({
-          title: "Error",
-          description: "Gagal membuat Soal. Silakan coba lagi nanti.",
+          title: "Gagal Membuat Soal",
+          description: error.message || "Gagal membuat Soal. Silakan coba lagi nanti.",
           variant: "destructive",
         });
       })
@@ -114,6 +156,14 @@ export default function Home() {
         setIsLoadingSoal(false);
       });
   };
+
+  // Update useEffect to reflect data availability in state
+  useEffect(() => {
+    // Update status indicators based on actual data availability
+    setIsRPPSubmitted(!!rppData);
+    setIsKisiKisiGenerated(!!kisiKisiData);
+    setIsSoalGenerated(!!soalData);
+  }, [rppData, kisiKisiData, soalData]);
 
   return (
     // Ubah background gradient pada main element
@@ -138,7 +188,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">
-              EduCreator
+              RppCreator
             </h1>
             <div className="absolute -bottom-1 left-0 right-0 h-1.5 bg-gradient-to-r from-primary to-primary-light rounded-full"></div>
           </div>
@@ -251,12 +301,25 @@ export default function Home() {
                 {!isKisiKisiGenerated && (
                   <motion.button
                     onClick={handleGenerateKisiKisi}
-                    className="bg-gradient-to-r from-[#FFEB00] to-amber-400 text-gray-800 px-4 py-2 rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    disabled={isLoadingKisiKisi}
+                    className={`${isLoadingKisiKisi
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#FFEB00] to-amber-400 hover:shadow-lg"
+                      } text-gray-800 px-4 py-2 rounded-xl flex items-center gap-2 shadow-md transition-all`}
+                    whileHover={{ scale: isLoadingKisiKisi ? 1 : 1.03 }}
+                    whileTap={{ scale: isLoadingKisiKisi ? 1 : 0.97 }}
                   >
-                    <Grid3X3 className="h-4 w-4" />
-                    <span className="font-medium">Buat Kisi-Kisi</span>
+                    {isLoadingKisiKisi ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="font-medium">Membuat...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Grid3X3 className="h-4 w-4" />
+                        <span className="font-medium">Buat Kisi-Kisi</span>
+                      </>
+                    )}
                   </motion.button>
                 )}
               </div>
@@ -287,12 +350,25 @@ export default function Home() {
                 {!isSoalGenerated && (
                   <motion.button
                     onClick={handleGenerateSoal}
-                    className="bg-gradient-to-r from-[#4379F2] to-blue-400 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    disabled={isLoadingSoal}
+                    className={`${isLoadingSoal
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#4379F2] to-blue-400 hover:shadow-lg"
+                      } text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-md transition-all`}
+                    whileHover={{ scale: isLoadingSoal ? 1 : 1.03 }}
+                    whileTap={{ scale: isLoadingSoal ? 1 : 0.97 }}
                   >
-                    <FileQuestion className="h-4 w-4" />
-                    <span className="font-medium">Buat Soal</span>
+                    {isLoadingSoal ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span className="font-medium">Membuat...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FileQuestion className="h-4 w-4" />
+                        <span className="font-medium">Buat Soal</span>
+                      </>
+                    )}
                   </motion.button>
                 )}
               </div>
