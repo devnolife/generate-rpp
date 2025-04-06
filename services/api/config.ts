@@ -7,32 +7,16 @@ import axios from 'axios';
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
 
 /**
- * API request timeout
- */
-export const API_TIMEOUT = parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '30000', 10);
-
-/**
- * Debug mode flag
- */
-export const DEBUG_MODE = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true';
-
-/**
  * Configure axios defaults
  */
 export const configureAxios = () => {
   // Set base URL
   axios.defaults.baseURL = API_BASE_URL;
 
-  // Set timeout
-  axios.defaults.timeout = API_TIMEOUT;
-
   // Add request interceptor for authentication if needed
   axios.interceptors.request.use(
     (config) => {
       // Add any auth headers or other common headers here
-      if (DEBUG_MODE) {
-        console.log('API Request:', config);
-      }
       return config;
     },
     (error) => {
@@ -43,9 +27,6 @@ export const configureAxios = () => {
   // Add response interceptor for error handling
   axios.interceptors.response.use(
     (response) => {
-      if (DEBUG_MODE) {
-        console.log('API Response:', response.status, response.data);
-      }
       return response;
     },
     (error) => {
@@ -73,7 +54,6 @@ export const configureAxios = () => {
 export const createApiClient = () => {
   const client = axios.create({
     baseURL: API_BASE_URL,
-    timeout: API_TIMEOUT,
     headers: {
       'Content-Type': 'application/json',
     },
