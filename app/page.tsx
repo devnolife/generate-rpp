@@ -12,6 +12,12 @@ import { HasilRPPSkeleton } from "@/components/skeletons/hasil-rpp-skeleton"
 import { KisiKisiSkeleton } from "@/components/skeletons/kisi-kisi-skeleton"
 import { SoalSkeleton } from "@/components/skeletons/soal-skeleton"
 import { toast } from "@/components/ui/use-toast"
+import { RPPService } from "@/services/api/rpp"
+import { RPPFormData } from "@/types/rpp"
+import { configureAxios } from "@/services/api/config"
+
+// Configure axios
+configureAxios();
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("buat-rpp")
@@ -27,88 +33,8 @@ export default function Home() {
   const [isKisiKisiGenerated, setIsKisiKisiGenerated] = useState(false)
   const [isSoalGenerated, setIsSoalGenerated] = useState(false)
 
-  // Fungsi untuk mengambil data RPP
-  const fetchRPPData = async () => {
-    if (rppData) return // Jika data sudah ada, tidak perlu fetch lagi
-
-    setIsLoadingRPP(true)
-    try {
-      const response = await fetch("/api/rpp")
-      if (!response.ok) {
-        throw new Error("Failed to fetch RPP data")
-      }
-      const data = await response.json()
-      setRppData(data)
-    } catch (error) {
-      console.error("Error fetching RPP data:", error)
-      toast({
-        title: "Error",
-        description: "Gagal mengambil data RPP. Silakan coba lagi nanti.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingRPP(false)
-    }
-  }
-
-  // Fungsi untuk mengambil data Kisi-Kisi
-  const fetchKisiKisiData = async () => {
-    if (kisiKisiData) return // Jika data sudah ada, tidak perlu fetch lagi
-
-    setIsLoadingKisiKisi(true)
-    try {
-      const response = await fetch("/api/kisi-kisi")
-      if (!response.ok) {
-        throw new Error("Failed to fetch Kisi-Kisi data")
-      }
-      const data = await response.json()
-      setKisiKisiData(data)
-    } catch (error) {
-      console.error("Error fetching Kisi-Kisi data:", error)
-      toast({
-        title: "Error",
-        description: "Gagal mengambil data Kisi-Kisi. Silakan coba lagi nanti.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingKisiKisi(false)
-    }
-  }
-
-  // Fungsi untuk mengambil data Soal
-  const fetchSoalData = async () => {
-    if (soalData) return // Jika data sudah ada, tidak perlu fetch lagi
-
-    setIsLoadingSoal(true)
-    try {
-      const response = await fetch("/api/soal")
-      if (!response.ok) {
-        throw new Error("Failed to fetch Soal data")
-      }
-      const data = await response.json()
-      setSoalData(data)
-    } catch (error) {
-      console.error("Error fetching Soal data:", error)
-      toast({
-        title: "Error",
-        description: "Gagal mengambil data Soal. Silakan coba lagi nanti.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingSoal(false)
-    }
-  }
-
-  // Mengambil data berdasarkan tab yang aktif
-  useEffect(() => {
-    if (activeTab === "hasil-generate") {
-      fetchRPPData()
-    } else if (activeTab === "kisi-kisi") {
-      fetchKisiKisiData()
-    } else if (activeTab === "soal") {
-      fetchSoalData()
-    }
-  }, [activeTab])
+  // Store form data for reuse with other API calls
+  const [formData, setFormData] = useState<RPPFormData | null>(null)
 
   const tabs = [
     { id: "buat-rpp", label: "Buat RPP", icon: <FileText className="h-5 w-5 text-[#117554]" /> },
@@ -118,25 +44,76 @@ export default function Home() {
   ]
 
   // Fungsi untuk menangani submit form RPP
-  const handleRPPSubmit = () => {
-    setIsRPPSubmitted(true)
-    setActiveTab("hasil-generate")
-    fetchRPPData()
-  }
+  const handleRPPSubmit = (data: RPPFormData) => {
+    setFormData(data);
+    setIsLoadingRPP(true);
+
+    RPPService.generateRPP(data)
+      .then(response => {
+        setRppData(response as unknown as RPPData);
+        setIsRPPSubmitted(true);
+        setActiveTab("hasil-generate");
+      })
+      .catch(error => {
+        console.error("Error submitting RPP data:", error);
+        toast({
+          title: "Error",
+          description: "Gagal mengirim data RPP. Silakan coba lagi nanti.",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsLoadingRPP(false);
+      });
+  };
 
   // Fungsi untuk menangani pembuatan Kisi-Kisi
   const handleGenerateKisiKisi = () => {
-    setIsKisiKisiGenerated(true)
-    setActiveTab("kisi-kisi")
-    fetchKisiKisiData()
-  }
+    if (!formData) return;
+
+    setIsLoadingKisiKisi(true);
+    RPPService.generateKisiKisi(formData)
+      .then(response => {
+        setKisiKisiData(response as unknown as KisiKisiData);
+        setIsKisiKisiGenerated(true);
+        setActiveTab("kisi-kisi");
+      })
+      .catch(error => {
+        console.error("Error generating Kisi-Kisi:", error);
+        toast({
+          title: "Error",
+          description: "Gagal membuat Kisi-Kisi. Silakan coba lagi nanti.",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsLoadingKisiKisi(false);
+      });
+  };
 
   // Fungsi untuk menangani pembuatan Soal
   const handleGenerateSoal = () => {
-    setIsSoalGenerated(true)
-    setActiveTab("soal")
-    fetchSoalData()
-  }
+    if (!formData) return;
+
+    setIsLoadingSoal(true);
+    RPPService.generateSoal(formData)
+      .then(response => {
+        setSoalData(response as unknown as SoalData);
+        setIsSoalGenerated(true);
+        setActiveTab("soal");
+      })
+      .catch(error => {
+        console.error("Error generating Soal:", error);
+        toast({
+          title: "Error",
+          description: "Gagal membuat Soal. Silakan coba lagi nanti.",
+          variant: "destructive",
+        });
+      })
+      .finally(() => {
+        setIsLoadingSoal(false);
+      });
+  };
 
   return (
     // Ubah background gradient pada main element
@@ -205,30 +182,29 @@ export default function Home() {
                   }
                   setActiveTab(tab.id)
                 }}
-                className={`px-5 py-3 rounded-xl flex items-center gap-2 font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-md"
-                    : (
-                          (tab.id === "hasil-generate" && !isRPPSubmitted) ||
-                            (tab.id === "kisi-kisi" && !isKisiKisiGenerated) ||
-                            (tab.id === "soal" && !isSoalGenerated)
-                        )
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-600 hover:bg-gray-100"
-                }`}
-                whileHover={{
-                  scale:
+                className={`px-5 py-3 rounded-xl flex items-center gap-2 font-medium transition-all whitespace-nowrap ${activeTab === tab.id
+                  ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-md"
+                  : (
                     (tab.id === "hasil-generate" && !isRPPSubmitted) ||
                     (tab.id === "kisi-kisi" && !isKisiKisiGenerated) ||
                     (tab.id === "soal" && !isSoalGenerated)
+                  )
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                whileHover={{
+                  scale:
+                    (tab.id === "hasil-generate" && !isRPPSubmitted) ||
+                      (tab.id === "kisi-kisi" && !isKisiKisiGenerated) ||
+                      (tab.id === "soal" && !isSoalGenerated)
                       ? 1
                       : 1.03,
                 }}
                 whileTap={{
                   scale:
                     (tab.id === "hasil-generate" && !isRPPSubmitted) ||
-                    (tab.id === "kisi-kisi" && !isKisiKisiGenerated) ||
-                    (tab.id === "soal" && !isSoalGenerated)
+                      (tab.id === "kisi-kisi" && !isKisiKisiGenerated) ||
+                      (tab.id === "soal" && !isSoalGenerated)
                       ? 1
                       : 0.97,
                 }}
@@ -288,7 +264,7 @@ export default function Home() {
               {isLoadingRPP ? (
                 <HasilRPPSkeleton />
               ) : (
-                <HasilRPP data={rppData} onGenerateKisiKisi={handleGenerateKisiKisi} />
+                rppData ? <HasilRPP data={rppData} onGenerateKisiKisi={handleGenerateKisiKisi} /> : <div className="text-center py-8 text-gray-500">Belum ada data RPP</div>
               )}
             </motion.div>
           )}
@@ -324,7 +300,7 @@ export default function Home() {
               {isLoadingKisiKisi ? (
                 <KisiKisiSkeleton />
               ) : (
-                <KisiKisi data={kisiKisiData} onGenerateSoal={handleGenerateSoal} />
+                kisiKisiData ? <KisiKisi data={kisiKisiData} onGenerateSoal={handleGenerateSoal} /> : <div className="text-center py-8 text-gray-500">Belum ada data Kisi-Kisi</div>
               )}
             </motion.div>
           )}
@@ -343,7 +319,9 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-gray-800">Soal</h2>
               </div>
 
-              {isLoadingSoal ? <SoalSkeleton /> : <Soal data={soalData} />}
+              {isLoadingSoal ? <SoalSkeleton /> : (
+                soalData ? <Soal data={soalData} /> : <div className="text-center py-8 text-gray-500">Belum ada data Soal</div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

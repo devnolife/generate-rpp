@@ -52,6 +52,7 @@ const formSchema = z.object({
   fase: z.string().optional(),
   alokasi_waktu: z.string().min(1, { message: "Alokasi waktu harus diisi" }),
   tahapan: z.string().min(2, { message: "Tahapan harus diisi" }),
+  capaian_pembelajaran: z.string().min(2, { message: "Capaian pembelajaran harus diisi" }),
   domain_konten: z.string().min(2, { message: "Domain konten harus diisi" }),
   tujuan_pembelajaran: z.string().min(2, { message: "Tujuan pembelajaran harus diisi" }),
   konten_utama: z.string().min(2, { message: "Konten utama harus diisi" }),
@@ -62,15 +63,17 @@ const formSchema = z.object({
   profil_pelajar: z.string().optional(),
   sarana: z.string().optional(),
   target_peserta: z.string().optional(),
+  jumlah_peserta: z.string().optional(),
   model_pembelajaran: z.string().optional(),
   sumber_belajar: z.string().optional(),
   catatan: z.string().optional(),
 })
 
-export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
+export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSchema>) => void }) {
   const [currentStep, setCurrentStep] = useState(1)
   const [showAdditionalFields, setShowAdditionalFields] = useState(false)
   const [classOptions, setClassOptions] = useState<{ value: string; label: string }[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const totalSteps = 3
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,6 +88,7 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
       fase: "",
       alokasi_waktu: "",
       tahapan: "",
+      capaian_pembelajaran: "",
       domain_konten: "",
       tujuan_pembelajaran: "",
       konten_utama: "",
@@ -93,6 +97,7 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
       profil_pelajar: "",
       sarana: "",
       target_peserta: "",
+      jumlah_peserta: "",
       model_pembelajaran: "",
       sumber_belajar: "",
       catatan: "",
@@ -176,15 +181,28 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
   }, [jenjang, kelas, form])
 
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
-    toast({
-      title: "RPP berhasil disimpan! 🎉",
-      description: "Dokumen RPP Anda telah berhasil disimpan.",
-      className: "bg-primary text-white border-none",
-    })
-
-    // Panggil prop onSubmit untuk memberi tahu parent component
-    onSubmit()
+    setIsSubmitting(true)
+    try {
+      console.log(values)
+      onSubmit(values)
+      toast({
+        title: "RPP berhasil disimpan! 🎉",
+        description: "Dokumen RPP Anda telah berhasil disimpan.",
+        className: "bg-primary text-white border-none",
+      })
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      toast({
+        title: "Gagal menyimpan RPP",
+        description: "Terjadi kesalahan saat menyimpan. Silakan coba lagi.",
+        variant: "destructive",
+      })
+    } finally {
+      // Keep loading state for a bit to ensure user sees feedback
+      setTimeout(() => {
+        setIsSubmitting(false)
+      }, 1000)
+    }
   }
 
   const nextStep = () => {
@@ -736,6 +754,44 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
                   <div className="grid grid-cols-1 gap-6">
                     <FormField
                       control={form.control}
+                      name="capaian_pembelajaran"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center mb-2">
+                            <FormLabel className="text-gray-700 font-medium">Capaian Pembelajaran *</FormLabel>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
+                                    <HelpCircle className="h-4 w-4" />
+                                    <span className="sr-only">Info</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="w-80 text-sm">
+                                    Masukkan capaian pembelajaran yang diharapkan dari siswa.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <FormControl>
+                            <div className="relative">
+                              <Target className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                              <Textarea
+                                placeholder="Masukkan capaian pembelajaran..."
+                                className="min-h-[120px] pl-10 pt-2 rounded-xl border-gray-300 focus-visible:ring-primary resize-none bg-white/70 backdrop-blur-sm"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-red-500 text-xs mt-1" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="domain_konten"
                       render={({ field }) => (
                         <FormItem>
@@ -856,11 +912,11 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
                         style={{
                           backgroundColor: showAdditionalFields ? "#3674B5" : "#e5e7eb",
                         }}
+                        aria-label={showAdditionalFields ? "Nonaktifkan detail tambahan" : "Aktifkan detail tambahan"}
                       >
                         <span
-                          className={`${
-                            showAdditionalFields ? "translate-x-6" : "translate-x-1"
-                          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                          className={`${showAdditionalFields ? "translate-x-6" : "translate-x-1"
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                         />
                       </button>
                       <span className="text-sm font-medium text-gray-500">
@@ -1056,6 +1112,87 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
 
                             <FormField
                               control={form.control}
+                              name="target_peserta"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <div className="flex items-center mb-2">
+                                    <FormLabel className="text-gray-700 font-medium">Target Peserta</FormLabel>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
+                                            <HelpCircle className="h-4 w-4" />
+                                            <span className="sr-only">Info</span>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="w-80 text-sm">
+                                            Deskripsikan target peserta didik yang akan mengikuti pembelajaran.
+                                          </p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                  <FormControl>
+                                    <div className="group relative transition-all duration-300">
+                                      <div className="absolute left-0 top-0 h-full w-1 bg-primary-lightest rounded-l-xl group-focus-within:bg-primary-light transition-colors"></div>
+                                      <div className="relative">
+                                        <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-focus-within:text-primary-light transition-colors" />
+                                        <Textarea
+                                          placeholder="Deskripsikan target peserta didik..."
+                                          className="min-h-[100px] pl-10 pt-2 rounded-xl border-gray-200 focus-visible:ring-primary-light focus-visible:border-transparent shadow-sm resize-none bg-white/70 backdrop-blur-sm"
+                                          {...field}
+                                        />
+                                      </div>
+                                    </div>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="jumlah_peserta"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <div className="flex items-center mb-2">
+                                    <FormLabel className="text-gray-700 font-medium">Jumlah Peserta</FormLabel>
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-6 w-6 ml-1 text-gray-400">
+                                            <HelpCircle className="h-4 w-4" />
+                                            <span className="sr-only">Info</span>
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p className="w-80 text-sm">
+                                            Masukkan jumlah peserta didik yang akan mengikuti pembelajaran.
+                                          </p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                  <FormControl>
+                                    <div className="group relative transition-all duration-300">
+                                      <div className="absolute left-0 top-0 h-full w-1 bg-primary-lightest rounded-l-xl group-focus-within:bg-primary-light transition-colors"></div>
+                                      <div className="relative">
+                                        <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-focus-within:text-primary-light transition-colors" />
+                                        <Input
+                                          type="number"
+                                          placeholder="Masukkan jumlah peserta didik..."
+                                          className="pl-10 py-6 rounded-xl border-gray-200 focus-visible:ring-primary-light focus-visible:border-transparent shadow-sm bg-white/70 backdrop-blur-sm"
+                                          {...field}
+                                        />
+                                      </div>
+                                    </div>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
                               name="model_pembelajaran"
                               render={({ field }) => (
                                 <FormItem>
@@ -1149,11 +1286,21 @@ export function RPPForm({ onSubmit }: { onSubmit: () => void }) {
 
                     <Button
                       type="submit"
+                      disabled={isSubmitting}
                       className="relative overflow-hidden bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary text-white px-10 py-6 rounded-xl flex items-center gap-3 shadow-lg hover:shadow-xl transition-all group"
                     >
                       <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-full bg-primary-light group-hover:translate-x-0"></span>
-                      <Save className="h-5 w-5 relative z-10" />
-                      <span className="font-medium relative z-10">Simpan RPP</span>
+                      {isSubmitting ? (
+                        <>
+                          <div className="h-5 w-5 relative z-10 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span className="font-medium relative z-10">Membuat...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-5 w-5 relative z-10" />
+                          <span className="font-medium relative z-10">Buat RPP</span>
+                        </>
+                      )}
                     </Button>
                   </div>
                 </motion.div>

@@ -34,149 +34,100 @@ import { jsPDF } from "jspdf"
 import html2canvas from "html2canvas"
 import { toast } from "@/components/ui/use-toast"
 
-// Definisikan tipe data untuk RPP
 export interface RPPData {
+  status?: string;
+  message?: string;
   rpp: {
-    rpp_bahasa_inggris: {
-      identitas: {
-        nama_penyusun: string
-        institusi: string
-        tahun_pembuatan: string
-        mata_pelajaran: string
-        jenjang: string
-        kelas: string
-        alokasi_waktu: string
-        tahapan: string
-      }
-      komponen_pembelajaran: {
-        capaian_pembelajaran: string
-        domain_konten: string
-        tujuan_pembelajaran: string[]
-        konten_utama: {
-          linguistik: string[]
-          tematik: string
-        }
-        prasyarat_pengetahuan: string[]
-        pemahaman_bermakna: string
-        profil_pelajar_pancasila: {
-          dimensi_1: string
-          dimensi_2: string
-          dimensi_3: string
-        }
-        sarana_prasarana: string[]
-        target_peserta_didik: string
-        jumlah_peserta_didik: string
-        model_pembelajaran: {
-          nama_model: string
-          alasan_pemilihan: string
-          tahapan: string[]
-        }
-        sumber_belajar: string[]
-      }
-      kegiatan_pembelajaran: {
-        kegiatan_awal: {
-          durasi: string
-          langkah_kegiatan: Array<{
-            aktivitas: string
-            waktu: string
-            peran_guru: string
-            peran_siswa: string
-          }>
-        }
-        kegiatan_inti: {
-          durasi: string
-          langkah_kegiatan: Array<{
-            aktivitas: string
-            waktu: string
-            peran_guru: string
-            peran_siswa: string
-            pengelompokan: string
-            pertanyaan_kunci: string[]
-          }>
-          strategi_diferensiasi: {
-            kemampuan_tinggi: string
-            kemampuan_sedang: string
-            kemampuan_rendah: string
-          }
-        }
-        kegiatan_penutup: {
-          durasi: string
-          langkah_kegiatan: Array<{
-            aktivitas: string
-            waktu: string
-            peran_guru: string
-            peran_siswa: string
-          }>
-          pertanyaan_refleksi: string[]
-        }
-      }
-      materi_dan_assessment: {
-        bahan_ajar: {
-          teori: string
-          materi_linguistik: {
-            grammar: string
-            vocabulary: Array<{
-              kata: string
-              arti: string
-            }>
-          }
-          teks_lengkap: string
-          materi_visual: string
-        }
-        remedial: {
-          aktivitas: string
-          strategi_intervensi: string[]
-          instrumen_penilaian: string
-        }
-        pengayaan: {
-          aktivitas: string[]
-          produk_yang_diharapkan: string
-        }
-        assessment: {
-          penilaian_pengetahuan: {
-            teknik: string
-            bentuk_instrumen: string
-            kisi_kisi: string
-            instrumen: string[]
-            kunci_jawaban: string[]
-            pedoman_penskoran: string
-          }
-          penilaian_keterampilan_mengucapkan: {
-            teknik: string
-            aspek_penilaian: Array<{
-              nama_aspek: string
-              deskripsi: Array<{
-                level: string
-                skor: number
-              }>
-            }>
-            penentuan_nilai: string
-            instrumen: string
-          }
-          penilaian_keterampilan_menulis: {
-            teknik: string
-            instrumen: string
-            rubrik: {
-              kriteria_1: {
-                sangat_baik: string
-                baik: string
-                cukup: string
-                perlu_bimbingan: string
-              }
-              kriteria_2: {
-                sangat_baik: string
-                baik: string
-                cukup: string
-                perlu_bimbingan: string
-              }
-            }
-            pedoman_penskoran: string
-          }
-        }
-      }
-    }
-  }
-  created_at?: string
+    "IDENTITAS RPP": {
+      "Nama Penyusun": string;
+      "Institusi": string;
+      "Tahun Pembuatan": string;
+      "Mata Pelajaran": string;
+      "Jenjang": string;
+      "Kelas": string;
+      "Alokasi Waktu": string;
+      "Tahapan": string;
+    };
+    "KOMPONEN PEMBELAJARAN": {
+      "Capaian Pembelajaran (CP)": string;
+      "Domain Konten/Elemen": string;
+      "Tujuan Pembelajaran": string[];
+      "Konten Utama": string;
+      "Prasyarat Pengetahuan": string;
+      "Pemahaman Bermakna": string;
+      "Profil Pelajar Pancasila": Array<{
+        "Dimensi": string;
+        "Penjelasan": string;
+      }>;
+      "Sarana Prasarana": string[];
+      "Target Peserta Didik": string;
+      "Jumlah Peserta Didik": string;
+      "Model Pembelajaran": string;
+      "Alasan Pemilihan Model": string;
+      "Sumber Belajar": Array<{
+        "Penulis": string;
+        "Tahun": number;
+        "Judul": string;
+        "Penerbit": string;
+      }>;
+    };
+    "KEGIATAN PEMBELAJARAN": {
+      "Kegiatan Awal (15 Menit)": Array<{
+        "Aktivitas": string;
+        "Waktu": string;
+        "Deskripsi": string;
+        "Pertanyaan"?: string;
+        "Contoh Kontekstual"?: string;
+        "Pertanyaan Refleksi"?: string;
+      }>;
+      "Kegiatan Inti (90 Menit)": Array<{
+        "Aktivitas": string;
+        "Waktu": string;
+        "Deskripsi Guru": string;
+        "Deskripsi Siswa": string;
+        "Pengelompokan"?: string;
+        "Pertanyaan"?: string;
+        "Pertanyaan HOTS"?: string;
+        "Strategi Diferensiasi"?: string;
+      }>;
+      "Kegiatan Penutup (15 Menit)": Array<{
+        "Aktivitas": string;
+        "Waktu": string;
+        "Deskripsi": string;
+        "Pertanyaan Refleksi"?: string;
+      }>;
+    };
+    "MATERI DAN ASSESSMENT": {
+      "Bahan Ajar": {
+        "Teori": string;
+        "Contoh Kontekstual": string;
+      };
+      "Remedial": {
+        "Aktivitas": string;
+        "Strategi Intervensi": string;
+        "Instrumen Penilaian": string;
+      };
+      "Pengayaan": {
+        "Aktivitas": string[];
+        "Produk/Output": string;
+      };
+      "Assessment": {
+        "Instrumen": Array<{
+          "Jenis": string;
+          "Soal": string[];
+        }>;
+        "Rubrik Penilaian": {
+          "Aspek": string[];
+          "Kriteria": string[];
+          "Bobot": Record<string, number>;
+        };
+        "Pedoman Penskoran": string;
+        "Interpretasi Hasil": string;
+        "Strategi Umpan Balik": string;
+      };
+    };
+  };
+  created_at?: string;
 }
 
 interface HasilRPPProps {
@@ -186,24 +137,26 @@ interface HasilRPPProps {
 
 // Tambahkan prop onGenerateKisiKisi
 export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  console.log("Data hasil RPP", data);
+
+  const [expandedSections, setExpandedSections] = useState({
     identitas: true,
     komponenPembelajaran: true,
-    kegiatanPembelajaran: false,
-    materiAssessment: false,
+    kegiatanPembelajaran: true,
+    penilaian: true,
+    materiAssessment: true
   })
   const [isSharing, setIsSharing] = useState(false)
   const [shareSuccess, setShareSuccess] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
   const toggleSection = (section: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }))
+    setExpandedSections({
+      ...expandedSections,
+      [section]: !expandedSections[section as keyof typeof expandedSections],
+    })
   }
 
-  // Fungsi untuk mencetak dokumen
   const handlePrint = () => {
     // Buka semua bagian sebelum mencetak
     const allExpanded = Object.keys(expandedSections).reduce(
@@ -214,7 +167,13 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       {} as Record<string, boolean>,
     )
 
-    setExpandedSections(allExpanded)
+    setExpandedSections({
+      identitas: true,
+      komponenPembelajaran: true,
+      kegiatanPembelajaran: true,
+      penilaian: true,
+      materiAssessment: true
+    })
 
     // Berikan waktu untuk render sebelum mencetak
     setTimeout(() => {
@@ -235,7 +194,13 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       {} as Record<string, boolean>,
     )
 
-    setExpandedSections(allExpanded)
+    setExpandedSections({
+      identitas: true,
+      komponenPembelajaran: true,
+      kegiatanPembelajaran: true,
+      penilaian: true,
+      materiAssessment: true
+    })
 
     // Berikan waktu untuk render sebelum mengunduh
     setTimeout(async () => {
@@ -285,8 +250,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
         }
 
         // Unduh PDF
-        const rpp = data?.rpp.rpp_bahasa_inggris
-        const fileName = `RPP_${rpp?.identitas.mata_pelajaran}_${rpp?.identitas.kelas}_${new Date().toISOString().split("T")[0]}.pdf`
+        const fileName = `RPP_${data?.rpp["IDENTITAS RPP"]["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}_${data?.rpp["IDENTITAS RPP"]["Kelas"] || 'Kelas'}_${new Date().toISOString().split("T")[0]}.pdf`
         pdf.save(fileName)
 
         toast({
@@ -312,8 +276,8 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       // Jika Web Share API tersedia
       if (navigator.share) {
         await navigator.share({
-          title: `RPP ${data?.rpp.rpp_bahasa_inggris.identitas.mata_pelajaran}`,
-          text: `RPP ${data?.rpp.rpp_bahasa_inggris.identitas.mata_pelajaran} untuk Kelas ${data?.rpp.rpp_bahasa_inggris.identitas.kelas}`,
+          title: `RPP ${data?.rpp["IDENTITAS RPP"]["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}`,
+          text: `RPP ${data?.rpp["IDENTITAS RPP"]["Mata Pelajaran"] || 'Dokumen'} untuk Kelas ${data?.rpp["IDENTITAS RPP"]["Kelas"] || 'Kelas'}`,
           url: window.location.href,
         })
         setIsSharing(false)
@@ -358,7 +322,22 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     )
   }
 
-  const rpp = data.rpp.rpp_bahasa_inggris
+  // Make sure data and data.rpp are not null before proceeding
+  if (!data.rpp) {
+    return (
+      <div className="p-12 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-center">
+        <div className="w-16 h-16 bg-primary-lightest rounded-full flex items-center justify-center mb-4">
+          <FileText className="h-8 w-8 text-primary-light" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Data RPP Tidak Lengkap</h3>
+        <p className="text-gray-500 max-w-md">
+          Format data RPP tidak valid atau tidak lengkap. Silakan coba generate ulang.
+        </p>
+      </div>
+    )
+  }
+
+  const rpp = data.rpp["IDENTITAS RPP"]
 
   const formatDate = () => {
     if (!data.created_at) return "Hari ini"
@@ -379,7 +358,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
           <div className="flex items-center gap-3">
             <FileText className="h-6 w-6 text-[#6EC207]" />
             <div>
-              <h2 className="text-xl font-bold text-gray-800">RPP {rpp.identitas.mata_pelajaran}</h2>
+              <h2 className="text-xl font-bold text-gray-800">RPP {rpp["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}</h2>
               <p className="text-sm text-gray-500">Dibuat pada {formatDate()}</p>
             </div>
           </div>
@@ -462,7 +441,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <User className="h-5 w-5 text-[#4379F2]" />
                       <div>
                         <p className="text-sm text-gray-500">Nama Penyusun</p>
-                        <p className="font-medium text-gray-800">{rpp.identitas.nama_penyusun}</p>
+                        <p className="font-medium text-gray-800">{rpp["Nama Penyusun"]}</p>
                       </div>
                     </div>
 
@@ -470,7 +449,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <School className="h-5 w-5 text-[#FFEB00]" />
                       <div>
                         <p className="text-sm text-gray-500">Institusi</p>
-                        <p className="font-medium text-gray-800">{rpp.identitas.institusi}</p>
+                        <p className="font-medium text-gray-800">{rpp["Institusi"]}</p>
                       </div>
                     </div>
 
@@ -478,7 +457,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <Calendar className="h-5 w-5 text-[#6EC207]" />
                       <div>
                         <p className="text-sm text-gray-500">Tahun Pembuatan</p>
-                        <p className="font-medium text-gray-800">{rpp.identitas.tahun_pembuatan}</p>
+                        <p className="font-medium text-gray-800">{rpp["Tahun Pembuatan"]}</p>
                       </div>
                     </div>
                   </div>
@@ -488,7 +467,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <BookOpen className="h-5 w-5 text-[#117554]" />
                       <div>
                         <p className="text-sm text-gray-500">Mata Pelajaran</p>
-                        <p className="font-medium text-gray-800">{rpp.identitas.mata_pelajaran}</p>
+                        <p className="font-medium text-gray-800">{rpp["Mata Pelajaran"]}</p>
                       </div>
                     </div>
 
@@ -497,7 +476,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <div>
                         <p className="text-sm text-gray-500">Jenjang & Kelas</p>
                         <p className="font-medium text-gray-800">
-                          {rpp.identitas.jenjang} - Kelas {rpp.identitas.kelas}
+                          {rpp["Jenjang"]} - Kelas {rpp["Kelas"]}
                         </p>
                       </div>
                     </div>
@@ -506,7 +485,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <Clock className="h-5 w-5 text-[#FFEB00]" />
                       <div>
                         <p className="text-sm text-gray-500">Alokasi Waktu</p>
-                        <p className="font-medium text-gray-800">{rpp.identitas.alokasi_waktu}</p>
+                        <p className="font-medium text-gray-800">{rpp["Alokasi Waktu"]}</p>
                       </div>
                     </div>
                   </div>
@@ -554,7 +533,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Capaian Pembelajaran</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{rpp.komponen_pembelajaran.capaian_pembelajaran}</p>
+                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Capaian Pembelajaran (CP)"]}</p>
                     </div>
                   </div>
 
@@ -564,7 +543,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Domain Konten</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{rpp.komponen_pembelajaran.domain_konten}</p>
+                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Domain Konten/Elemen"]}</p>
                     </div>
                   </div>
 
@@ -575,7 +554,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="list-disc pl-5 space-y-2">
-                        {rpp.komponen_pembelajaran.tujuan_pembelajaran.map((tujuan, index) => (
+                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Tujuan Pembelajaran"]?.map((tujuan, index) => (
                           <li key={index} className="text-gray-700">
                             {tujuan}
                           </li>
@@ -589,21 +568,8 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <List className="h-5 w-5 text-primary" />
                       <h4 className="font-medium text-gray-800">Konten Utama</h4>
                     </div>
-                    <div className="bg-gray-50 p-4 rounded-xl space-y-4">
-                      <div>
-                        <h5 className="font-medium text-gray-700 mb-2">Linguistik:</h5>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {rpp.komponen_pembelajaran.konten_utama.linguistik.map((item, index) => (
-                            <li key={index} className="text-gray-700">
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-gray-700 mb-2">Tematik:</h5>
-                        <p className="text-gray-700">{rpp.komponen_pembelajaran.konten_utama.tematik}</p>
-                      </div>
+                    <div className="bg-gray-50 p-4 rounded-xl">
+                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Konten Utama"]}</p>
                     </div>
                   </div>
 
@@ -613,13 +579,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Prasyarat Pengetahuan</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <ul className="list-disc pl-5 space-y-2">
-                        {rpp.komponen_pembelajaran.prasyarat_pengetahuan.map((prasyarat, index) => (
-                          <li key={index} className="text-gray-700">
-                            {prasyarat}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Prasyarat Pengetahuan"]}</p>
                     </div>
                   </div>
 
@@ -629,7 +589,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Pemahaman Bermakna</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{rpp.komponen_pembelajaran.pemahaman_bermakna}</p>
+                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Pemahaman Bermakna"]}</p>
                     </div>
                   </div>
 
@@ -639,81 +599,57 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Profil Pelajar Pancasila</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                      <div>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Dimensi 1:</span>{" "}
-                          {rpp.komponen_pembelajaran.profil_pelajar_pancasila.dimensi_1}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Dimensi 2:</span>{" "}
-                          {rpp.komponen_pembelajaran.profil_pelajar_pancasila.dimensi_2}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Dimensi 3:</span>{" "}
-                          {rpp.komponen_pembelajaran.profil_pelajar_pancasila.dimensi_3}
-                        </p>
-                      </div>
+                      {data.rpp["KOMPONEN PEMBELAJARAN"]["Profil Pelajar Pancasila"]?.map((profil, index) => (
+                        <div key={index} className="bg-white p-3 rounded-lg border border-gray-100">
+                          <h5 className="font-medium text-gray-800 mb-1">Dimensi: {profil.Dimensi}</h5>
+                          <p className="text-gray-700">{profil.Penjelasan}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="h-5 w-5 text-primary" />
+                      <h4 className="font-medium text-gray-800">Sarana Prasarana</h4>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl">
+                      <ul className="list-disc pl-5 space-y-1">
+                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Sarana Prasarana"]?.map((sarana, index) => (
+                          <li key={index} className="text-gray-700">{sarana}</li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <Briefcase className="h-5 w-5 text-primary" />
-                        <h4 className="font-medium text-gray-800">Sarana Prasarana</h4>
+                        <GraduationCap className="h-5 w-5 text-primary" />
+                        <h4 className="font-medium text-gray-800">Target Peserta Didik</h4>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-xl">
-                        <ul className="list-disc pl-5 space-y-1">
-                          {rpp.komponen_pembelajaran.sarana_prasarana.map((sarana, index) => (
-                            <li key={index} className="text-gray-700">
-                              {sarana}
-                            </li>
-                          ))}
-                        </ul>
+                        <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Target Peserta Didik"]}</p>
+                        <p className="text-gray-700 mt-2">
+                          Jumlah: {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Jumlah Peserta Didik"]} siswa
+                        </p>
                       </div>
                     </div>
 
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
-                        <GraduationCap className="h-5 w-5 text-primary" />
-                        <h4 className="font-medium text-gray-800">Target Peserta Didik</h4>
+                        <Award className="h-5 w-5 text-primary" />
+                        <h4 className="font-medium text-gray-800">Model Pembelajaran</h4>
                       </div>
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <p className="text-gray-700">{rpp.komponen_pembelajaran.target_peserta_didik}</p>
-                        <p className="text-gray-700 mt-2">
-                          Jumlah: {rpp.komponen_pembelajaran.jumlah_peserta_didik} siswa
+                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                        <p className="text-gray-700">
+                          <span className="font-medium">Nama Model:</span>{" "}
+                          {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Model Pembelajaran"]}
                         </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      <h4 className="font-medium text-gray-800">Model Pembelajaran</h4>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                      <p className="text-gray-700">
-                        <span className="font-medium">Nama Model:</span>{" "}
-                        {rpp.komponen_pembelajaran.model_pembelajaran.nama_model}
-                      </p>
-                      <p className="text-gray-700">
-                        <span className="font-medium">Alasan Pemilihan:</span>{" "}
-                        {rpp.komponen_pembelajaran.model_pembelajaran.alasan_pemilihan}
-                      </p>
-                      <div>
-                        <p className="font-medium text-gray-700 mb-1">Tahapan:</p>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {rpp.komponen_pembelajaran.model_pembelajaran.tahapan.map((tahap, index) => (
-                            <li key={index} className="text-gray-700">
-                              {tahap}
-                            </li>
-                          ))}
-                        </ul>
+                        <p className="text-gray-700">
+                          <span className="font-medium">Alasan Pemilihan:</span>{" "}
+                          {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Alasan Pemilihan Model"]}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -724,10 +660,10 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Sumber Belajar</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <ul className="list-disc pl-5 space-y-2">
-                        {rpp.komponen_pembelajaran.sumber_belajar.map((sumber, index) => (
+                      <ul className="space-y-2">
+                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Sumber Belajar"]?.map((sumber, index) => (
                           <li key={index} className="text-gray-700">
-                            {sumber}
+                            {sumber.Penulis}. ({sumber.Tahun}). <em>{sumber.Judul}</em>. {sumber.Penerbit}.
                           </li>
                         ))}
                       </ul>
@@ -781,7 +717,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Awal</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        {rpp.kegiatan_pembelajaran.kegiatan_awal.durasi}
+                        15 Menit
                       </div>
                     </div>
 
@@ -796,20 +732,16 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                               Waktu
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Guru
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Siswa
+                              Deskripsi
                             </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {rpp.kegiatan_pembelajaran.kegiatan_awal.langkah_kegiatan.map((langkah, index) => (
+                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Awal (15 Menit)"]?.map((kegiatan, index) => (
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_guru}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_siswa}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -827,7 +759,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Inti</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        {rpp.kegiatan_pembelajaran.kegiatan_inti.durasi}
+                        90 Menit
                       </div>
                     </div>
 
@@ -842,62 +774,24 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                               Waktu
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Guru
+                              Deskripsi Guru
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Siswa
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Pengelompokan
+                              Deskripsi Siswa
                             </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {rpp.kegiatan_pembelajaran.kegiatan_inti.langkah_kegiatan.map((langkah, index) => (
+                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Inti (90 Menit)"]?.map((kegiatan, index) => (
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_guru}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_siswa}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.pengelompokan}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Guru"]}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Siswa"]}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                    </div>
-
-                    <div className="space-y-3 mt-4">
-                      <h5 className="font-medium text-gray-700">Pertanyaan Kunci:</h5>
-                      {rpp.kegiatan_pembelajaran.kegiatan_inti.langkah_kegiatan.map((langkah, langkahIndex) => (
-                        <div key={langkahIndex} className="bg-gray-50 p-3 rounded-lg">
-                          <p className="font-medium text-gray-700 mb-2">Aktivitas: {langkah.aktivitas}</p>
-                          <ul className="list-disc pl-5 space-y-1">
-                            {langkah.pertanyaan_kunci.map((pertanyaan, index) => (
-                              <li key={index} className="text-gray-700 text-sm">
-                                {pertanyaan}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="space-y-3 mt-4">
-                      <h5 className="font-medium text-gray-700">Strategi Diferensiasi:</h5>
-                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                        <p className="text-gray-700">
-                          <span className="font-medium">Kemampuan Tinggi:</span>{" "}
-                          {rpp.kegiatan_pembelajaran.kegiatan_inti.strategi_diferensiasi.kemampuan_tinggi}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Kemampuan Sedang:</span>{" "}
-                          {rpp.kegiatan_pembelajaran.kegiatan_inti.strategi_diferensiasi.kemampuan_sedang}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Kemampuan Rendah:</span>{" "}
-                          {rpp.kegiatan_pembelajaran.kegiatan_inti.strategi_diferensiasi.kemampuan_rendah}
-                        </p>
-                      </div>
                     </div>
                   </div>
 
@@ -911,7 +805,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Penutup</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        {rpp.kegiatan_pembelajaran.kegiatan_penutup.durasi}
+                        15 Menit
                       </div>
                     </div>
 
@@ -926,37 +820,20 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                               Waktu
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Guru
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Peran Siswa
+                              Deskripsi
                             </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {rpp.kegiatan_pembelajaran.kegiatan_penutup.langkah_kegiatan.map((langkah, index) => (
+                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Penutup (15 Menit)"]?.map((kegiatan, index) => (
                             <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_guru}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{langkah.peran_siswa}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                    </div>
-
-                    <div className="space-y-3 mt-4">
-                      <h5 className="font-medium text-gray-700">Pertanyaan Refleksi:</h5>
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <ul className="list-disc pl-5 space-y-2">
-                          {rpp.kegiatan_pembelajaran.kegiatan_penutup.pertanyaan_refleksi.map((pertanyaan, index) => (
-                            <li key={index} className="text-gray-700">
-                              {pertanyaan}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -967,7 +844,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
 
         {/* Materi dan Assessment */}
         <motion.div
-          className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 overflow-hidden"
+          className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 overflow-hidden mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
@@ -1007,53 +884,12 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Teori:</h5>
-                        <p className="text-gray-700 whitespace-pre-line">
-                          {rpp.materi_dan_assessment.bahan_ajar.teori}
-                        </p>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Bahan Ajar"]?.["Teori"]}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Materi Linguistik:</h5>
-                        <p className="text-gray-700 mb-3">
-                          <span className="font-medium">Grammar:</span>{" "}
-                          {rpp.materi_dan_assessment.bahan_ajar.materi_linguistik.grammar}
-                        </p>
-
-                        <h6 className="font-medium text-gray-700 mb-2">Vocabulary:</h6>
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full bg-white rounded-xl overflow-hidden">
-                            <thead className="bg-gray-100">
-                              <tr>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Kata
-                                </th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  Arti
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                              {rpp.materi_dan_assessment.bahan_ajar.materi_linguistik.vocabulary.map((vocab, index) => (
-                                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                  <td className="px-4 py-2 text-sm text-gray-700">{vocab.kata}</td>
-                                  <td className="px-4 py-2 text-sm text-gray-700">{vocab.arti}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Teks Lengkap:</h5>
-                        <p className="text-gray-700 whitespace-pre-line">
-                          {rpp.materi_dan_assessment.bahan_ajar.teks_lengkap}
-                        </p>
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Materi Visual:</h5>
-                        <p className="text-gray-700">{rpp.materi_dan_assessment.bahan_ajar.materi_visual}</p>
+                        <h5 className="font-medium text-gray-700 mb-2">Contoh Kontekstual:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Bahan Ajar"]?.["Contoh Kontekstual"]}</p>
                       </div>
                     </div>
                   </div>
@@ -1061,257 +897,99 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                   {/* Remedial */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <Layers className="h-5 w-5 text-primary" />
+                      <BookOpen className="h-5 w-5 text-primary" />
                       <h4 className="font-medium text-gray-800">Remedial</h4>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                      <p className="text-gray-700">
-                        <span className="font-medium">Aktivitas:</span> {rpp.materi_dan_assessment.remedial.aktivitas}
-                      </p>
-
-                      <div>
-                        <h5 className="font-medium text-gray-700 mb-1">Strategi Intervensi:</h5>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {rpp.materi_dan_assessment.remedial.strategi_intervensi.map((strategi, index) => (
-                            <li key={index} className="text-gray-700">
-                              {strategi}
-                            </li>
-                          ))}
-                        </ul>
+                    <div className="space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Aktivitas:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Aktivitas"]}</p>
                       </div>
 
-                      <p className="text-gray-700">
-                        <span className="font-medium">Instrumen Penilaian:</span>{" "}
-                        {rpp.materi_dan_assessment.remedial.instrumen_penilaian}
-                      </p>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Strategi Intervensi:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Strategi Intervensi"]}</p>
+                      </div>
+
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Instrumen Penilaian:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Instrumen Penilaian"]}</p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Pengayaan */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
+                      <BookOpen className="h-5 w-5 text-primary" />
                       <h4 className="font-medium text-gray-800">Pengayaan</h4>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                      <div>
-                        <h5 className="font-medium text-gray-700 mb-1">Aktivitas:</h5>
+                    <div className="space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Aktivitas:</h5>
                         <ul className="list-disc pl-5 space-y-1">
-                          {rpp.materi_dan_assessment.pengayaan.aktivitas.map((aktivitas, index) => (
-                            <li key={index} className="text-gray-700">
-                              {aktivitas}
-                            </li>
+                          {data.rpp["MATERI DAN ASSESSMENT"]["Pengayaan"]["Aktivitas"]?.map((aktivitas, index) => (
+                            <li key={index} className="text-gray-700">{aktivitas}</li>
                           ))}
                         </ul>
                       </div>
 
-                      <p className="text-gray-700">
-                        <span className="font-medium">Produk yang Diharapkan:</span>{" "}
-                        {rpp.materi_dan_assessment.pengayaan.produk_yang_diharapkan}
-                      </p>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Produk/Output:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]["Pengayaan"]["Produk/Output"]}</p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Assessment */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <CheckSquare className="h-5 w-5 text-primary" />
+                      <BookOpen className="h-5 w-5 text-primary" />
                       <h4 className="font-medium text-gray-800">Assessment</h4>
                     </div>
 
-                    <div className="space-y-6">
-                      {/* Penilaian Pengetahuan */}
-                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                        <h5 className="font-medium text-gray-700">Penilaian Pengetahuan</h5>
-
-                        <p className="text-gray-700">
-                          <span className="font-medium">Teknik:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.teknik}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Bentuk Instrumen:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.bentuk_instrumen}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Kisi-kisi:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.kisi_kisi}
-                        </p>
-
-                        <div>
-                          <h6 className="font-medium text-gray-700 mb-1">Instrumen:</h6>
-                          <ol className="list-decimal pl-5 space-y-1">
-                            {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.instrumen.map(
-                              (instrumen, index) => (
-                                <li key={index} className="text-gray-700">
-                                  {instrumen}
-                                </li>
-                              ),
-                            )}
-                          </ol>
-                        </div>
-
-                        <div>
-                          <h6 className="font-medium text-gray-700 mb-1">Kunci Jawaban:</h6>
-                          <ol className="list-decimal pl-5 space-y-1">
-                            {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.kunci_jawaban.map(
-                              (jawaban, index) => (
-                                <li key={index} className="text-gray-700">
-                                  {jawaban}
-                                </li>
-                              ),
-                            )}
-                          </ol>
-                        </div>
-
-                        <p className="text-gray-700">
-                          <span className="font-medium">Pedoman Penskoran:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_pengetahuan.pedoman_penskoran}
-                        </p>
+                    <div className="space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Instrumen:</h5>
+                        {data.rpp["MATERI DAN ASSESSMENT"]["Assessment"]["Instrumen"]?.map((instrumen, index) => (
+                          <div key={index} className="mb-4">
+                            <p className="font-medium text-gray-700">{instrumen.Jenis}:</p>
+                            <ul className="list-decimal pl-5 space-y-1 mt-2">
+                              {instrumen.Soal?.map((soal, soalIndex) => (
+                                <li key={soalIndex} className="text-gray-700">{soal}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
                       </div>
 
-                      {/* Penilaian Keterampilan Mengucapkan */}
-                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                        <h5 className="font-medium text-gray-700">Penilaian Keterampilan Mengucapkan</h5>
-
-                        <p className="text-gray-700">
-                          <span className="font-medium">Teknik:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_mengucapkan.teknik}
-                        </p>
-
-                        <div>
-                          <h6 className="font-medium text-gray-700 mb-2">Aspek Penilaian:</h6>
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_mengucapkan.aspek_penilaian.map(
-                            (aspek, aspekIndex) => (
-                              <div key={aspekIndex} className="mb-4">
-                                <p className="font-medium text-gray-700 mb-1">{aspek.nama_aspek}:</p>
-                                <div className="overflow-x-auto">
-                                  <table className="min-w-full bg-white rounded-xl overflow-hidden">
-                                    <thead className="bg-gray-100">
-                                      <tr>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                          Level
-                                        </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                          Skor
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                      {aspek.deskripsi.map((desc, index) => (
-                                        <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                          <td className="px-4 py-2 text-sm text-gray-700">{desc.level}</td>
-                                          <td className="px-4 py-2 text-sm text-gray-700">{desc.skor}</td>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            ),
-                          )}
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Rubrik Penilaian:</h5>
+                        <div className="space-y-2">
+                          <p className="font-medium text-gray-700">Aspek:</p>
+                          <ul className="list-disc pl-5 space-y-1">
+                            {data.rpp["MATERI DAN ASSESSMENT"]["Assessment"]["Rubrik Penilaian"]?.["Aspek"]?.map((aspek, index) => (
+                              <li key={index} className="text-gray-700">{aspek}</li>
+                            ))}
+                          </ul>
                         </div>
-
-                        <p className="text-gray-700">
-                          <span className="font-medium">Penentuan Nilai:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_mengucapkan.penentuan_nilai}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Instrumen:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_mengucapkan.instrumen}
-                        </p>
                       </div>
 
-                      {/* Penilaian Keterampilan Menulis */}
-                      <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                        <h5 className="font-medium text-gray-700">Penilaian Keterampilan Menulis</h5>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Pedoman Penskoran:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Pedoman Penskoran"]}</p>
+                      </div>
 
-                        <p className="text-gray-700">
-                          <span className="font-medium">Teknik:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.teknik}
-                        </p>
-                        <p className="text-gray-700">
-                          <span className="font-medium">Instrumen:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.instrumen}
-                        </p>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Interpretasi Hasil:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Interpretasi Hasil"]}</p>
+                      </div>
 
-                        <div>
-                          <h6 className="font-medium text-gray-700 mb-2">Rubrik:</h6>
-
-                          <div className="mb-3">
-                            <p className="font-medium text-gray-700 mb-1">Kriteria 1:</p>
-                            <div className="pl-4 space-y-1">
-                              <p className="text-gray-700">
-                                <span className="font-medium">Sangat Baik:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_1
-                                    .sangat_baik
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Baik:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_1
-                                    .baik
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Cukup:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_1
-                                    .cukup
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Perlu Bimbingan:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_1
-                                    .perlu_bimbingan
-                                }
-                              </p>
-                            </div>
-                          </div>
-
-                          <div>
-                            <p className="font-medium text-gray-700 mb-1">Kriteria 2:</p>
-                            <div className="pl-4 space-y-1">
-                              <p className="text-gray-700">
-                                <span className="font-medium">Sangat Baik:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_2
-                                    .sangat_baik
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Baik:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_2
-                                    .baik
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Cukup:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_2
-                                    .cukup
-                                }
-                              </p>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Perlu Bimbingan:</span>{" "}
-                                {
-                                  rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.rubrik.kriteria_2
-                                    .perlu_bimbingan
-                                }
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <p className="text-gray-700">
-                          <span className="font-medium">Pedoman Penskoran:</span>{" "}
-                          {rpp.materi_dan_assessment.assessment.penilaian_keterampilan_menulis.pedoman_penskoran}
-                        </p>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <h5 className="font-medium text-gray-700 mb-2">Strategi Umpan Balik:</h5>
+                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Strategi Umpan Balik"]}</p>
                       </div>
                     </div>
                   </div>
