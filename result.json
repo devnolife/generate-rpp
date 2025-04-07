@@ -1,0 +1,316 @@
+{
+  "status": "success",
+  "message": "RPP for Bahasa Inggris generated successfully",
+  "rpp": {
+    "IDENTITAS_RPP": {
+      "nama_penyusun": "Andi Sabda, S.Pd",
+      "institusi": "UPT SMP Negeri 2 Rumbia",
+      "tahun_pembuatan": "2025",
+      "mata_pelajaran": "Bahasa Inggris (Fokus: Vocabulary - Professions)",
+      "jenjang": "SMP (Sekolah Menengah Pertama)",
+      "kelas": "VII",
+      "alokasi_waktu": "1x40 menit",
+      "tahapan": "FASE D"
+    },
+    "KOMPONEN_PEMBELAJARAN": {
+      "capaian_pembelajaran": "Pada akhir Fase D, peserta didik memiliki kemampuan menulis dan mempresentasikan teks deskriptif sederhana tentang orang, tempat, atau benda, dengan menggunakan kosakata yang berkaitan dengan profesi. Mereka juga mampu memahami dan merespons instruksi sederhana yang berkaitan dengan konteks pekerjaan sehari-hari.",
+      "domain_konten_elemen": [
+        "Menulis (Writing)",
+        "Mempresentasikan (Presenting)",
+        "Menyimak (Listening - sebagai pendukung)",
+        "Berbicara (Speaking - sebagai pendukung)"
+      ],
+      "tujuan_pembelajaran": [
+        {
+          "tujuan": "Peserta didik (Audience) mampu menyebutkan (Behavior) minimal 10 jenis pekerjaan (profesi) dalam Bahasa Inggris (Condition) dengan pengucapan yang benar (Degree).",
+          "abcd": "ABCD"
+        },
+        {
+          "tujuan": "Peserta didik (Audience) mampu menuliskan (Behavior) deskripsi singkat (Condition) tentang satu profesi yang diminati (Degree) dengan menggunakan kalimat sederhana dalam Bahasa Inggris.",
+          "abcd": "ABCD"
+        },
+        {
+          "tujuan": "Peserta didik (Audience) mampu mempresentasikan (Behavior) profesi yang diminati (Condition) di depan kelas (Degree) dengan percaya diri dan pengucapan yang jelas.",
+          "abcd": "ABCD"
+        }
+      ],
+      "konten_utama": "Vocabulary: Professions (e.g., teacher, doctor, engineer, police officer, firefighter, nurse, pilot, chef, artist, musician)",
+      "prasyarat_pengetahuan": "Peserta didik memiliki pengetahuan dasar tentang berbagai jenis pekerjaan yang ada di lingkungan sekitar mereka, yang umum dikenal dalam Bahasa Indonesia.",
+      "pemahaman_bermakna": "Pemahaman tentang berbagai profesi membantu peserta didik untuk memperluas wawasan mereka tentang dunia kerja, mengidentifikasi minat dan bakat mereka, serta merencanakan karir di masa depan. Pertanyaan pemantik akan membantu siswa menghubungkan pengetahuan yang sudah ada dengan materi baru.",
+      "profil_pelajar_pancasila": [
+        {
+          "dimensi": "Bernalar Kritis",
+          "penjelasan": "Melalui kegiatan diskusi dan presentasi, peserta didik dilatih untuk menganalisis informasi tentang berbagai profesi, mengidentifikasi kelebihan dan kekurangan masing-masing, serta membuat keputusan yang rasional tentang minat mereka."
+        },
+        {
+          "dimensi": "Mandiri",
+          "penjelasan": "Peserta didik bertanggung jawab untuk mencari informasi tentang profesi yang diminati, mempersiapkan presentasi, dan menyelesaikan tugas-tugas yang diberikan secara mandiri."
+        }
+      ],
+      "sarana_prasarana": [
+        "Papan tulis",
+        "Spidol/kapur",
+        "Buku siswa",
+        "Gawai (HP) dengan akses internet",
+        "Proyektor (jika tersedia)",
+        "Laptop/komputer (jika tersedia)",
+        "Gambar/ilustrasi berbagai profesi (cetak atau digital)"
+      ],
+      "target_peserta_didik": "Peserta didik regular",
+      "jumlah_peserta_didik": "30",
+      "model_pembelajaran": "Tatap muka dengan pendekatan Communicative Language Teaching (CLT). Alasan pemilihan model ini adalah karena CLT menekankan pada penggunaan bahasa yang otentik dan relevan dalam komunikasi sehari-hari. Model ini juga mendorong peserta didik untuk aktif berpartisipasi dalam kegiatan pembelajaran dan berinteraksi dengan teman sebayanya.",
+      "sumber_belajar": [
+        "Buku siswa dan buku guru “English in Mind- student’s & teacher’s book second edition class VII” Penerbit Pusat kurikulum dan perbukuan Badan Penelitian dan Pengembangan dan Perbukuan Kementerian Pendidikan, Kebudayaan, Riset, dan Tekhnologi, Herbert puchta dkk, tahun 2021.",
+        "Kamus Bahasa Inggris-Indonesia",
+        "Internet (untuk mencari gambar/video tentang profesi)"
+      ]
+    },
+    "KEGIATAN_PEMBELAJARAN": {
+      "kegiatan_awal": {
+        "durasi": "10 menit",
+        "aktivitas": [
+          {
+            "deskripsi": "Guru membuka pelajaran dengan salam pembuka dan doa bersama.",
+            "waktu": "2 menit"
+          },
+          {
+            "deskripsi": "Guru mengecek kehadiran peserta didik.",
+            "waktu": "1 menit"
+          },
+          {
+            "deskripsi": "Guru melakukan apersepsi dengan mengajukan pertanyaan tentang pekerjaan orang tua atau orang dewasa yang dikenal peserta didik. Contoh: 'What does your father/mother do for a living?' atau 'Do you know any doctors/teachers/police officers?'",
+            "waktu": "3 menit",
+            "pertanyaan": [
+              "What does your father/mother do for a living?",
+              "Do you know any doctors/teachers/police officers?",
+              "What do they do?"
+            ]
+          },
+          {
+            "deskripsi": "Guru memberikan motivasi dengan menjelaskan pentingnya mempelajari kosakata tentang profesi untuk memperluas wawasan dan merencanakan karir di masa depan.",
+            "waktu": "2 menit"
+          },
+          {
+            "deskripsi": "Guru menyampaikan tujuan pembelajaran yang akan dicapai pada pertemuan ini, yaitu menyebutkan berbagai macam pekerjaan (profesi) dalam Bahasa Inggris.",
+            "waktu": "2 menit"
+          }
+        ]
+      },
+      "kegiatan_inti": {
+        "durasi": "25 menit",
+        "aktivitas": [
+          {
+            "tahap": "Eksplorasi",
+            "deskripsi_guru": "Guru menampilkan gambar/ilustrasi berbagai profesi (misalnya, guru, dokter, polisi, pemadam kebakaran, dll.) di papan tulis atau melalui proyektor. Guru menyebutkan nama profesi dalam Bahasa Inggris dan meminta peserta didik untuk mengulangi.",
+            "deskripsi_siswa": "Peserta didik mengamati gambar/ilustrasi yang ditampilkan dan mengulangi nama profesi yang disebutkan oleh guru.",
+            "waktu": "5 menit",
+            "pertanyaan": [
+              "What do you see in the picture?",
+              "What is his/her job?",
+              "Can you repeat after me?"
+            ],
+            "pengelompokan": "Klasikal"
+          },
+          {
+            "tahap": "Elaborasi",
+            "deskripsi_guru": "Guru membagi peserta didik menjadi kelompok-kelompok kecil (4-5 orang). Setiap kelompok diberikan kartu bergambar profesi yang berbeda-beda. Guru meminta setiap kelompok untuk berdiskusi dan menuliskan nama profesi yang ada di kartu dalam Bahasa Inggris.",
+            "deskripsi_siswa": "Peserta didik berdiskusi dalam kelompok dan menuliskan nama profesi yang ada di kartu dalam Bahasa Inggris.",
+            "waktu": "10 menit",
+            "pertanyaan": [
+              "What is this?",
+              "How do you spell it?",
+              "Can you find the word in your dictionary?"
+            ],
+            "pengelompokan": "Kelompok kecil"
+          },
+          {
+            "tahap": "Konfirmasi",
+            "deskripsi_guru": "Guru meminta setiap kelompok untuk mempresentasikan hasil diskusi mereka di depan kelas. Guru memberikan umpan balik dan koreksi jika diperlukan.",
+            "deskripsi_siswa": "Setiap kelompok mempresentasikan hasil diskusi mereka di depan kelas. Peserta didik mendengarkan umpan balik dan koreksi dari guru.",
+            "waktu": "10 menit",
+            "pertanyaan": [
+              "Can you tell us what you have found?",
+              "How do you pronounce it?",
+              "Is there any different opinion?"
+            ],
+            "pengelompokan": "Klasikal"
+          }
+        ]
+      },
+      "kegiatan_penutup": {
+        "durasi": "5 menit",
+        "aktivitas": [
+          {
+            "deskripsi": "Guru melakukan refleksi dengan mengajukan pertanyaan kepada peserta didik tentang apa yang telah mereka pelajari pada hari ini. Contoh: 'What have you learned today?' atau 'What is your favorite profession and why?'",
+            "waktu": "2 menit",
+            "pertanyaan": [
+              "What have you learned today?",
+              "What is your favorite profession and why?",
+              "What is the most difficult word for you?"
+            ]
+          },
+          {
+            "deskripsi": "Guru memberikan kesimpulan tentang materi yang telah dipelajari.",
+            "waktu": "1 menit"
+          },
+          {
+            "deskripsi": "Guru memberikan umpan balik terhadap proses pembelajaran yang telah berlangsung.",
+            "waktu": "1 menit"
+          },
+          {
+            "deskripsi": "Guru menyampaikan materi yang akan dipelajari pada pertemuan berikutnya.",
+            "waktu": "1 menit"
+          }
+        ]
+      }
+    },
+    "MATERI_DAN_ASSESSMENT": {
+      "bahan_ajar": {
+        "teori": "Profesi adalah pekerjaan atau kegiatan yang dilakukan oleh seseorang untuk mendapatkan penghasilan. Setiap profesi memiliki peran dan tanggung jawab yang berbeda-beda. Beberapa profesi membutuhkan pendidikan dan pelatihan khusus, sementara yang lain tidak.",
+        "materi_linguistik": {
+          "grammar": "Penggunaan Simple Present Tense untuk mendeskripsikan pekerjaan seseorang. Contoh: 'A teacher teaches students.' atau 'A doctor treats patients.'",
+          "vocabulary": [
+            "Teacher (guru)",
+            "Doctor (dokter)",
+            "Engineer (insinyur)",
+            "Police officer (polisi)",
+            "Firefighter (pemadam kebakaran)",
+            "Nurse (perawat)",
+            "Pilot (pilot)",
+            "Chef (koki)",
+            "Artist (seniman)",
+            "Musician (musisi)",
+            "Farmer (petani)",
+            "Writer (penulis)"
+          ],
+          "contoh_kontekstual": "My father is a doctor. He works in a hospital and helps sick people. He is very dedicated to his job. I want to be a teacher like my mother. She teaches English at a junior high school. She loves her students very much."
+        },
+        "teks_dialog": "Rina: Hi, Andi. What does your father do?\nAndi: Hi, Rina. My father is a police officer. He works at the police station and helps people to maintain security.\nRina: Wow, that's a cool job. What about your mother?\nAndi: My mother is a nurse. She works in a hospital and takes care of patients.\nRina: That's a noble job. What do you want to be in the future, Andi?\nAndi: I want to be an engineer. I like to design and build things.\nRina: That's great. I want to be a teacher like my aunt. She inspires me a lot.\nAndi: I hope we can achieve our dreams someday.\nRina: Me too. Let's study hard and make our parents proud.\nAndi: Sure, Rina. Let's do our best.",
+        "materi_visual": "Gambar/ilustrasi berbagai profesi dengan pakaian seragam atau alat kerja yang khas. Contoh: Guru dengan buku dan papan tulis, dokter dengan stetoskop, polisi dengan seragam dan mobil patroli, dll."
+      },
+      "remedial": {
+        "aktivitas": "Peserta didik yang belum mencapai KKM diberikan bimbingan individu atau kelompok kecil. Mereka diberikan latihan tambahan berupa pengulangan kosakata dan pembuatan kalimat sederhana tentang profesi.",
+        "strategi_intervensi": "Jika kesulitan terletak pada pengucapan, guru memberikan latihan pengucapan secara intensif. Jika kesulitan terletak pada pemahaman makna, guru memberikan penjelasan tambahan dan contoh-contoh yang lebih sederhana.",
+        "instrumen_penilaian": "Tes lisan sederhana berupa menyebutkan nama profesi yang ditunjuk pada gambar atau mendeskripsikan profesi secara singkat."
+      },
+      "pengayaan": {
+        "aktivitas": [
+          "Peserta didik membuat poster tentang profesi yang diminati dengan gambar dan deskripsi singkat dalam Bahasa Inggris.",
+          "Peserta didik melakukan wawancara dengan orang yang memiliki profesi tertentu dan menuliskan laporan singkat tentang wawancara tersebut.",
+          "Peserta didik membuat video pendek tentang profesi yang diminati dan mempresentasikan di depan kelas."
+        ],
+        "produk_output": "Poster, laporan wawancara, video pendek"
+      },
+      "assessment": {
+        "penilaian_pengetahuan": {
+          "teknik_penilaian": "Tes tertulis",
+          "bentuk_instrumen": "Menyebutkan macam-macam profesi dalam Bahasa Inggris",
+          "kisi_kisi": "Mengamati gambar yang ada di buku siswa halaman 11.",
+          "instrumen_penilaian": [
+            "What is the job of someone who teaches students?",
+            "What is the job of someone who treats sick people?",
+            "What is the job of someone who designs and builds things?",
+            "What is the job of someone who protects people and enforces the law?",
+            "What is the job of someone who puts out fires?"
+          ],
+          "rubrik_penilaian": {
+            "kriteria": "Ketepatan menyebutkan nama profesi dalam Bahasa Inggris",
+            "skor": {
+              "1": "Tidak dapat menyebutkan",
+              "2": "Menyebutkan dengan kurang tepat",
+              "3": "Menyebutkan dengan tepat tetapi ada sedikit kesalahan",
+              "4": "Menyebutkan dengan tepat dan benar"
+            },
+            "pedoman_penskoran": "Nilai = (Jumlah skor yang diperoleh / Jumlah skor maksimal) x 100"
+          }
+        },
+        "penilaian_keterampilan_mengucapkan": {
+          "rubrik": [
+            {
+              "no": 1,
+              "aspek": "Pengucapan",
+              "deskripsi": "1. Sempurna",
+              "skor": 5
+            },
+            {
+              "no": 1,
+              "aspek": "Pengucapan",
+              "deskripsi": "2. Ada kesalahan tapi tidak mengganggu makna",
+              "skor": 4
+            },
+            {
+              "no": 1,
+              "aspek": "Pengucapan",
+              "deskripsi": "3. Ada beberapa kesalahan dan mengganggu makna",
+              "skor": 3
+            },
+            {
+              "no": 1,
+              "aspek": "Pengucapan",
+              "deskripsi": "4. Banyak kesalahan dan mengganggu makna",
+              "skor": 2
+            },
+            {
+              "no": 1,
+              "aspek": "Pengucapan",
+              "deskripsi": "5. Terlalu banyak kesalahan sehingga sulit untuk dipahami",
+              "skor": 1
+            },
+            {
+              "no": 2,
+              "aspek": "Pilihan Kata",
+              "deskripsi": "a. Sangat variatif dan tepat",
+              "skor": 5
+            },
+            {
+              "no": 2,
+              "aspek": "Pilihan Kata",
+              "deskripsi": "b. Variatif dan tepat",
+              "skor": 4
+            },
+            {
+              "no": 2,
+              "aspek": "Pilihan Kata",
+              "deskripsi": "c. Cukup variatif dan tepat",
+              "skor": 3
+            },
+            {
+              "no": 2,
+              "aspek": "Pilihan Kata",
+              "deskripsi": "d. Kurang variatif dan tepat",
+              "skor": 2
+            },
+            {
+              "no": 2,
+              "aspek": "Pilihan Kata",
+              "deskripsi": "e. Tidak variatif dan tepat",
+              "skor": 1
+            }
+          ],
+          "penentuan_nilai": "nilaiSiswa = skorDiperoleh/skorMaksimal * 100"
+        },
+        "penilaian_keterampilan_menulis": {
+          "teknik_penilaian": "Tes tertulis",
+          "bentuk_instrumen": "Menulis deskripsi singkat tentang satu profesi yang diminati",
+          "instrumen_penilaian": "Write a short description about your dream job. (50-75 words)",
+          "rubrik_penilaian": {
+            "kriteria": [
+              "Kesesuaian isi dengan topik",
+              "Penggunaan kosakata yang tepat",
+              "Tata bahasa yang benar",
+              "Struktur kalimat yang jelas"
+            ],
+            "skor": {
+              "1": "Kurang",
+              "2": "Cukup",
+              "3": "Baik",
+              "4": "Sangat baik"
+            },
+            "pedoman_penskoran": "Nilai = (Jumlah skor yang diperoleh / Jumlah skor maksimal) x 100"
+          }
+        },
+        "strategi_umpan_balik": "Guru memberikan umpan balik secara individual kepada peserta didik tentang kekuatan dan kelemahan mereka dalam pengucapan dan penulisan. Guru memberikan saran-saran perbaikan yang spesifik dan memberikan kesempatan kepada peserta didik untuk memperbaiki kesalahan mereka."
+      }
+    }
+  }
+}

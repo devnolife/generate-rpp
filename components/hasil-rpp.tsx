@@ -38,7 +38,7 @@ export interface RPPData {
   status?: string;
   message?: string;
   rpp: {
-    "IDENTITAS RPP": {
+    "IDENTITAS RPP"?: {
       "Nama Penyusun": string;
       "Institusi": string;
       "Tahun Pembuatan": string;
@@ -47,7 +47,17 @@ export interface RPPData {
       "Kelas": string;
       "Alokasi Waktu": string;
     };
-    "KOMPONEN PEMBELAJARAN": {
+    "IDENTITAS_RPP"?: {
+      nama_penyusun: string;
+      institusi: string;
+      tahun_pembuatan: string;
+      mata_pelajaran: string;
+      jenjang: string;
+      kelas: string;
+      alokasi_waktu: string;
+      tahapan?: string;
+    };
+    "KOMPONEN PEMBELAJARAN"?: {
       "Capaian Pembelajaran (CP)": string;
       "Domain Konten/Elemen": string;
       "Tujuan Pembelajaran": string[];
@@ -70,7 +80,32 @@ export interface RPPData {
         "Penerbit": string;
       }>;
     };
-    "KEGIATAN PEMBELAJARAN": {
+    "KOMPONEN_PEMBELAJARAN"?: {
+      capaian_pembelajaran: string;
+      domain_konten_elemen: string[] | string;
+      tujuan_pembelajaran: Array<{
+        tujuan: string;
+        abcd: string;
+      }>;
+      konten_utama: string;
+      prasyarat_pengetahuan: string;
+      pemahaman_bermakna: string;
+      profil_pelajar_pancasila: Array<{
+        dimensi: string;
+        penjelasan: string;
+      }>;
+      sarana_prasarana: string[];
+      target_peserta_didik: string;
+      jumlah_peserta_didik: string;
+      model_pembelajaran: string;
+      sumber_belajar: string[] | Array<{
+        penulis?: string;
+        tahun?: number;
+        judul?: string;
+        penerbit?: string;
+      }>;
+    };
+    "KEGIATAN PEMBELAJARAN"?: {
       "Kegiatan Awal (15 Menit)": Array<{
         "Aktivitas": string;
         "Waktu": string;
@@ -96,7 +131,36 @@ export interface RPPData {
         "Pertanyaan Refleksi"?: string;
       }>;
     };
-    "MATERI DAN ASSESSMENT": {
+    "KEGIATAN_PEMBELAJARAN"?: {
+      kegiatan_awal: {
+        durasi: string;
+        aktivitas: Array<{
+          deskripsi: string;
+          waktu: string;
+          pertanyaan?: string[] | string;
+        }>;
+      };
+      kegiatan_inti: {
+        durasi: string;
+        aktivitas: Array<{
+          tahap: string;
+          deskripsi_guru: string;
+          deskripsi_siswa: string;
+          waktu: string;
+          pertanyaan?: string[] | string;
+          pengelompokan?: string;
+        }>;
+      };
+      kegiatan_penutup: {
+        durasi: string;
+        aktivitas: Array<{
+          deskripsi: string;
+          waktu: string;
+          pertanyaan?: string[] | string;
+        }>;
+      };
+    };
+    "MATERI DAN ASSESSMENT"?: {
       "Bahan Ajar": {
         "Teori": string;
         "Contoh Kontekstual": string;
@@ -125,6 +189,43 @@ export interface RPPData {
         "Strategi Umpan Balik": string;
       };
     };
+    "MATERI_DAN_ASSESSMENT"?: {
+      bahan_ajar: {
+        teori: string;
+        materi_linguistik: {
+          grammar: string;
+          vocabulary: string[];
+          contoh_kontekstual: string;
+        };
+        teks_dialog: string;
+        materi_visual: string;
+      };
+      remedial: {
+        aktivitas: string;
+        strategi_intervensi: string;
+        instrumen_penilaian: string;
+      };
+      pengayaan: {
+        aktivitas: string[];
+        produk_output: string;
+      };
+      assessment: {
+        penilaian_pengetahuan: {
+          teknik_penilaian: string;
+          bentuk_instrumen: string;
+          kisi_kisi: string;
+          instrumen_penilaian: string[];
+          rubrik_penilaian: {
+            kriteria: string;
+            skor: Record<string, string>;
+            pedoman_penskoran: string;
+          };
+        };
+        penilaian_keterampilan_mengucapkan?: any;
+        penilaian_keterampilan_menulis?: any;
+        strategi_umpan_balik: string;
+      };
+    };
   };
   created_at?: string;
 }
@@ -137,6 +238,29 @@ interface HasilRPPProps {
 // Tambahkan prop onGenerateKisiKisi
 export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
   console.log("Data hasil RPP", data);
+
+  // Helper function to safely convert any value to a renderable format
+  const safeRender = (value: any): React.ReactNode => {
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      return value;
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item, index) => (
+        <span key={index}>
+          {typeof item === 'object' ? JSON.stringify(item) : item}
+          {index < value.length - 1 ? ', ' : ''}
+        </span>
+      ));
+    }
+
+    // If it's an object, convert to string representation
+    return JSON.stringify(value);
+  };
 
   const [expandedSections, setExpandedSections] = useState({
     identitas: true,
@@ -336,7 +460,32 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     )
   }
 
-  const rpp = data.rpp["IDENTITAS RPP"]
+  // Support both formats - with spaces or with underscores
+  const identitas = data.rpp["IDENTITAS RPP"] || data.rpp["IDENTITAS_RPP"] || {}
+  const komponenPembelajaran = data.rpp["KOMPONEN PEMBELAJARAN"] || data.rpp["KOMPONEN_PEMBELAJARAN"] || {}
+  const kegiatanPembelajaran = data.rpp["KEGIATAN PEMBELAJARAN"] || data.rpp["KEGIATAN_PEMBELAJARAN"] || {}
+  const materiAssessment = data.rpp["MATERI DAN ASSESSMENT"] || data.rpp["MATERI_DAN_ASSESSMENT"] || {}
+
+  // Debug logs for troubleshooting
+  console.log("---- DEBUG RPP DATA ----");
+  console.log("RAW RPP STRUCTURE:", Object.keys(data.rpp));
+  console.log("TUJUAN PEMBELAJARAN:", {
+    withSpaces: data.rpp["KOMPONEN PEMBELAJARAN"]?.["Tujuan Pembelajaran"],
+    withUnderscores: data.rpp["KOMPONEN_PEMBELAJARAN"]?.["tujuan_pembelajaran"],
+    mergedComponent: komponenPembelajaran["Tujuan Pembelajaran"] || komponenPembelajaran["tujuan_pembelajaran"]
+  });
+  console.log("SARANA PRASARANA:", {
+    withSpaces: data.rpp["KOMPONEN PEMBELAJARAN"]?.["Sarana Prasarana"],
+    withUnderscores: data.rpp["KOMPONEN_PEMBELAJARAN"]?.["sarana_prasarana"],
+    mergedComponent: komponenPembelajaran["Sarana Prasarana"] || komponenPembelajaran["sarana_prasarana"]
+  });
+  console.log("KEGIATAN PEMBELAJARAN STRUCTURE:", {
+    rawObject: data.rpp["KEGIATAN PEMBELAJARAN"] || data.rpp["KEGIATAN_PEMBELAJARAN"],
+    kegiatanAwal: kegiatanPembelajaran["Kegiatan Awal (15 Menit)"] || kegiatanPembelajaran["kegiatan_awal"],
+    kegiatanInti: kegiatanPembelajaran["Kegiatan Inti (90 Menit)"] || kegiatanPembelajaran["kegiatan_inti"],
+    kegiatanPenutup: kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"] || kegiatanPembelajaran["kegiatan_penutup"]
+  });
+  console.log("---- END DEBUG ----");
 
   const formatDate = () => {
     if (!data.created_at) return "Hari ini"
@@ -357,7 +506,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
           <div className="flex items-center gap-3">
             <FileText className="h-6 w-6 text-[#6EC207]" />
             <div>
-              <h2 className="text-xl font-bold text-gray-800">RPP {rpp["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}</h2>
+              <h2 className="text-xl font-bold text-gray-800">RPP {identitas["Mata Pelajaran"] || identitas["mata_pelajaran"]?.split(" ")[0] || 'Dokumen'}</h2>
               <p className="text-sm text-gray-500">Dibuat pada {formatDate()}</p>
             </div>
           </div>
@@ -440,7 +589,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <User className="h-5 w-5 text-[#4379F2]" />
                       <div>
                         <p className="text-sm text-gray-500">Nama Penyusun</p>
-                        <p className="font-medium text-gray-800">{rpp["Nama Penyusun"]}</p>
+                        <p className="font-medium text-gray-800">{identitas["Nama Penyusun"] || identitas["nama_penyusun"]}</p>
                       </div>
                     </div>
 
@@ -448,7 +597,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <School className="h-5 w-5 text-[#FFEB00]" />
                       <div>
                         <p className="text-sm text-gray-500">Institusi</p>
-                        <p className="font-medium text-gray-800">{rpp["Institusi"]}</p>
+                        <p className="font-medium text-gray-800">{identitas["Institusi"] || identitas["institusi"]}</p>
                       </div>
                     </div>
 
@@ -456,7 +605,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <Calendar className="h-5 w-5 text-[#6EC207]" />
                       <div>
                         <p className="text-sm text-gray-500">Tahun Pembuatan</p>
-                        <p className="font-medium text-gray-800">{rpp["Tahun Pembuatan"]}</p>
+                        <p className="font-medium text-gray-800">{identitas["Tahun Pembuatan"] || identitas["tahun_pembuatan"]}</p>
                       </div>
                     </div>
                   </div>
@@ -466,7 +615,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <BookOpen className="h-5 w-5 text-[#117554]" />
                       <div>
                         <p className="text-sm text-gray-500">Mata Pelajaran</p>
-                        <p className="font-medium text-gray-800">{rpp["Mata Pelajaran"]}</p>
+                        <p className="font-medium text-gray-800">{identitas["Mata Pelajaran"] || identitas["mata_pelajaran"]}</p>
                       </div>
                     </div>
 
@@ -475,7 +624,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <div>
                         <p className="text-sm text-gray-500">Jenjang & Kelas</p>
                         <p className="font-medium text-gray-800">
-                          {rpp["Jenjang"]} - Kelas {rpp["Kelas"]}
+                          {identitas["Jenjang"] || identitas["jenjang"]} - Kelas {identitas["Kelas"] || identitas["kelas"]}
                         </p>
                       </div>
                     </div>
@@ -484,7 +633,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <Clock className="h-5 w-5 text-[#FFEB00]" />
                       <div>
                         <p className="text-sm text-gray-500">Alokasi Waktu</p>
-                        <p className="font-medium text-gray-800">{rpp["Alokasi Waktu"]}</p>
+                        <p className="font-medium text-gray-800">{identitas["Alokasi Waktu"] || identitas["alokasi_waktu"]}</p>
                       </div>
                     </div>
                   </div>
@@ -532,7 +681,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Capaian Pembelajaran</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Capaian Pembelajaran (CP)"]}</p>
+                      <p className="text-gray-700">{komponenPembelajaran["Capaian Pembelajaran (CP)"] || komponenPembelajaran["capaian_pembelajaran"]}</p>
                     </div>
                   </div>
 
@@ -542,7 +691,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Domain Konten</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Domain Konten/Elemen"]}</p>
+                      <p className="text-gray-700">{komponenPembelajaran["Domain Konten/Elemen"] || Array.isArray(komponenPembelajaran["domain_konten_elemen"]) ? komponenPembelajaran["domain_konten_elemen"].join(", ") : komponenPembelajaran["domain_konten_elemen"]}</p>
                     </div>
                   </div>
 
@@ -553,11 +702,34 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="list-disc pl-5 space-y-2">
-                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Tujuan Pembelajaran"]?.map((tujuan, index) => (
-                          <li key={index} className="text-gray-700">
-                            {tujuan}
-                          </li>
-                        ))}
+                        {(() => {
+                          console.log("RENDERING TUJUAN:", komponenPembelajaran["Tujuan Pembelajaran"] || komponenPembelajaran["tujuan_pembelajaran"]);
+
+                          // Different approach to get tujuan pembelajaran
+                          let tujuanArray = [];
+
+                          // Try the old format first
+                          if (Array.isArray(komponenPembelajaran?.["Tujuan Pembelajaran"])) {
+                            tujuanArray = komponenPembelajaran?.["Tujuan Pembelajaran"];
+                          }
+                          // Then try the new format
+                          else if (Array.isArray(komponenPembelajaran?.tujuan_pembelajaran)) {
+                            tujuanArray = komponenPembelajaran.tujuan_pembelajaran;
+                          }
+
+                          // Handle different formats
+                          if (tujuanArray.length > 0) {
+                            return tujuanArray.map((tujuan, index) => (
+                              <li key={index} className="text-gray-700">
+                                {typeof tujuan === "string"
+                                  ? tujuan
+                                  : tujuan.tujuan || tujuan.deskripsi || (tujuan.nomor && tujuan.deskripsi ? tujuan.deskripsi : tujuan.abcd)}
+                              </li>
+                            ));
+                          } else {
+                            return <li className="text-gray-700">Tidak ada data tujuan pembelajaran.</li>;
+                          }
+                        })()}
                       </ul>
                     </div>
                   </div>
@@ -568,7 +740,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Konten Utama</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Konten Utama"]}</p>
+                      <p className="text-gray-700">{komponenPembelajaran["Konten Utama"] || komponenPembelajaran["konten_utama"]}</p>
                     </div>
                   </div>
 
@@ -578,7 +750,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Prasyarat Pengetahuan</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Prasyarat Pengetahuan"]}</p>
+                      <p className="text-gray-700">{komponenPembelajaran["Prasyarat Pengetahuan"] || komponenPembelajaran["prasyarat_pengetahuan"]}</p>
                     </div>
                   </div>
 
@@ -588,7 +760,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Pemahaman Bermakna</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
-                      <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Pemahaman Bermakna"]}</p>
+                      <p className="text-gray-700">{komponenPembelajaran["Pemahaman Bermakna"] || komponenPembelajaran["pemahaman_bermakna"]}</p>
                     </div>
                   </div>
 
@@ -598,12 +770,19 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <h4 className="font-medium text-gray-800">Profil Pelajar Pancasila</h4>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                      {data.rpp["KOMPONEN PEMBELAJARAN"]["Profil Pelajar Pancasila"]?.map((profil, index) => (
-                        <div key={index} className="bg-white p-3 rounded-lg border border-gray-100">
-                          <h5 className="font-medium text-gray-800 mb-1">Dimensi: {profil.Dimensi}</h5>
-                          <p className="text-gray-700">{profil.Penjelasan}</p>
-                        </div>
-                      ))}
+                      {(() => {
+                        const profil = komponenPembelajaran["Profil Pelajar Pancasila"] || komponenPembelajaran["profil_pelajar_pancasila"] || [];
+
+                        if (Array.isArray(profil)) {
+                          return profil.map((item, index) => (
+                            <div key={index} className="bg-white p-3 rounded-lg border border-gray-100">
+                              <h5 className="font-medium text-gray-800 mb-1">Dimensi: {item.Dimensi || item.dimensi}</h5>
+                              <p className="text-gray-700">{item.Penjelasan || item.penjelasan}</p>
+                            </div>
+                          ));
+                        }
+                        return null;
+                      })()}
                     </div>
                   </div>
 
@@ -614,9 +793,37 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="list-disc pl-5 space-y-1">
-                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Sarana Prasarana"]?.map((sarana, index) => (
-                          <li key={index} className="text-gray-700">{sarana}</li>
-                        ))}
+                        {(() => {
+                          console.log("RENDERING SARANA:", komponenPembelajaran["Sarana Prasarana"] || komponenPembelajaran["sarana_prasarana"]);
+
+                          // Different approach to get sarana prasarana
+                          let sarana = [];
+
+                          // Try the old format first
+                          if (Array.isArray(komponenPembelajaran?.["Sarana Prasarana"])) {
+                            sarana = komponenPembelajaran?.["Sarana Prasarana"];
+                          }
+                          // Then try the new format with array
+                          else if (Array.isArray(komponenPembelajaran?.sarana_prasarana)) {
+                            sarana = komponenPembelajaran.sarana_prasarana;
+                          }
+                          // Handle string format (comma-separated)
+                          else if (typeof komponenPembelajaran?.["Sarana Prasarana"] === 'string') {
+                            sarana = komponenPembelajaran?.["Sarana Prasarana"].split(',').map(item => item.trim());
+                          }
+                          else if (typeof komponenPembelajaran?.sarana_prasarana === 'string') {
+                            sarana = komponenPembelajaran.sarana_prasarana.split(',').map(item => item.trim());
+                          }
+
+                          // Handle different formats
+                          if (sarana.length > 0) {
+                            return sarana.map((item, index) => (
+                              <li key={index} className="text-gray-700">{item}</li>
+                            ));
+                          } else {
+                            return <li className="text-gray-700">Tidak ada data sarana prasarana.</li>;
+                          }
+                        })()}
                       </ul>
                     </div>
                   </div>
@@ -628,9 +835,9 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Target Peserta Didik</h4>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-xl">
-                        <p className="text-gray-700">{data.rpp["KOMPONEN PEMBELAJARAN"]?.["Target Peserta Didik"]}</p>
+                        <p className="text-gray-700">{komponenPembelajaran["Target Peserta Didik"] || komponenPembelajaran["target_peserta_didik"]}</p>
                         <p className="text-gray-700 mt-2">
-                          Jumlah: {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Jumlah Peserta Didik"]} siswa
+                          Jumlah: {komponenPembelajaran["Jumlah Peserta Didik"] || komponenPembelajaran["jumlah_peserta_didik"]} siswa
                         </p>
                       </div>
                     </div>
@@ -643,11 +850,11 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <div className="bg-gray-50 p-4 rounded-xl space-y-3">
                         <p className="text-gray-700">
                           <span className="font-medium">Nama Model:</span>{" "}
-                          {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Model Pembelajaran"]}
+                          {komponenPembelajaran["Model Pembelajaran"] || komponenPembelajaran["model_pembelajaran"]}
                         </p>
                         <p className="text-gray-700">
                           <span className="font-medium">Alasan Pemilihan:</span>{" "}
-                          {data.rpp["KOMPONEN PEMBELAJARAN"]?.["Alasan Pemilihan Model"]}
+                          {komponenPembelajaran["Alasan Pemilihan Model"] || (komponenPembelajaran["model_pembelajaran"] || "").split("Alasan pemilihan model ini adalah")[1]}
                         </p>
                       </div>
                     </div>
@@ -660,11 +867,24 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="space-y-2">
-                        {data.rpp["KOMPONEN PEMBELAJARAN"]["Sumber Belajar"]?.map((sumber, index) => (
-                          <li key={index} className="text-gray-700">
-                            {sumber.Penulis}. ({sumber.Tahun}). <em>{sumber.Judul}</em>. {sumber.Penerbit}.
-                          </li>
-                        ))}
+                        {(() => {
+                          const sumberBelajar = komponenPembelajaran["Sumber Belajar"] || komponenPembelajaran["sumber_belajar"] || [];
+
+                          if (Array.isArray(sumberBelajar)) {
+                            return sumberBelajar.map((sumber, index) => {
+                              if (typeof sumber === 'string') {
+                                return <li key={index} className="text-gray-700">{sumber}</li>;
+                              } else {
+                                return (
+                                  <li key={index} className="text-gray-700">
+                                    {sumber.Penulis || sumber.penulis}. ({sumber.Tahun || sumber.tahun}). <em>{sumber.Judul || sumber.judul}</em>. {sumber.Penerbit || sumber.penerbit}.
+                                  </li>
+                                );
+                              }
+                            });
+                          }
+                          return null;
+                        })()}
                       </ul>
                     </div>
                   </div>
@@ -716,7 +936,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Awal</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        15 Menit
+                        {kegiatanPembelajaran["kegiatan_awal"]?.durasi || "15 Menit"}
                       </div>
                     </div>
 
@@ -736,13 +956,38 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Awal (15 Menit)"]?.map((kegiatan, index) => (
-                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi}</td>
-                            </tr>
-                          ))}
+                          {(() => {
+                            console.log("RENDERING KEGIATAN AWAL:", {
+                              withSpaces: kegiatanPembelajaran["Kegiatan Awal (15 Menit)"],
+                              withUnderscores: kegiatanPembelajaran["kegiatan_awal"],
+                              aktivitas: kegiatanPembelajaran?.kegiatan_awal?.aktivitas
+                            });
+
+                            // Different approach to get activities
+                            let kegiatanAwalItems = [];
+
+                            // Try the old format first
+                            if (Array.isArray(kegiatanPembelajaran["Kegiatan Awal (15 Menit)"])) {
+                              kegiatanAwalItems = kegiatanPembelajaran["Kegiatan Awal (15 Menit)"];
+                            }
+                            // Then try the new format with aktivitas property
+                            else if (kegiatanPembelajaran?.kegiatan_awal?.aktivitas &&
+                              Array.isArray(kegiatanPembelajaran.kegiatan_awal.aktivitas)) {
+                              kegiatanAwalItems = kegiatanPembelajaran.kegiatan_awal.aktivitas;
+                            }
+                            // Direct array format (as seen in the debug output)
+                            else if (Array.isArray(kegiatanPembelajaran?.kegiatan_awal)) {
+                              kegiatanAwalItems = kegiatanPembelajaran.kegiatan_awal;
+                            }
+
+                            return kegiatanAwalItems.map((kegiatan, index) => (
+                              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas || kegiatan.aktivitas || kegiatan.deskripsi}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu || kegiatan.waktu}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi || kegiatan.deskripsi}</td>
+                              </tr>
+                            ));
+                          })()}
                         </tbody>
                       </table>
                     </div>
@@ -758,7 +1003,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Inti</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        90 Menit
+                        {kegiatanPembelajaran["kegiatan_inti"]?.durasi || "90 Menit"}
                       </div>
                     </div>
 
@@ -781,14 +1026,39 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Inti (90 Menit)"]?.map((kegiatan, index) => (
-                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Guru"]}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Siswa"]}</td>
-                            </tr>
-                          ))}
+                          {(() => {
+                            console.log("RENDERING KEGIATAN INTI:", {
+                              withSpaces: kegiatanPembelajaran["Kegiatan Inti (90 Menit)"],
+                              withUnderscores: kegiatanPembelajaran["kegiatan_inti"],
+                              aktivitas: kegiatanPembelajaran?.kegiatan_inti?.aktivitas
+                            });
+
+                            // Different approach to get activities
+                            let kegiatanIntiItems = [];
+
+                            // Try the old format first
+                            if (Array.isArray(kegiatanPembelajaran["Kegiatan Inti (90 Menit)"])) {
+                              kegiatanIntiItems = kegiatanPembelajaran["Kegiatan Inti (90 Menit)"];
+                            }
+                            // Then try the new format with aktivitas property
+                            else if (kegiatanPembelajaran?.kegiatan_inti?.aktivitas &&
+                              Array.isArray(kegiatanPembelajaran.kegiatan_inti.aktivitas)) {
+                              kegiatanIntiItems = kegiatanPembelajaran.kegiatan_inti.aktivitas;
+                            }
+                            // Direct array format (as seen in the debug output)
+                            else if (Array.isArray(kegiatanPembelajaran?.kegiatan_inti)) {
+                              kegiatanIntiItems = kegiatanPembelajaran.kegiatan_inti;
+                            }
+
+                            return kegiatanIntiItems.map((kegiatan, index) => (
+                              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas || kegiatan.aktivitas || kegiatan.tahap}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu || kegiatan.waktu}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Guru"] || kegiatan.deskripsi_guru}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan["Deskripsi Siswa"] || kegiatan.deskripsi_siswa}</td>
+                              </tr>
+                            ));
+                          })()}
                         </tbody>
                       </table>
                     </div>
@@ -804,7 +1074,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <h4 className="font-medium text-gray-800">Kegiatan Penutup</h4>
                       </div>
                       <div className="px-3 py-1 bg-primary-lightest text-primary text-xs font-medium rounded-full">
-                        15 Menit
+                        {kegiatanPembelajaran["kegiatan_penutup"]?.durasi || "15 Menit"}
                       </div>
                     </div>
 
@@ -824,13 +1094,38 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {data.rpp["KEGIATAN PEMBELAJARAN"]["Kegiatan Penutup (15 Menit)"]?.map((kegiatan, index) => (
-                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu}</td>
-                              <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi}</td>
-                            </tr>
-                          ))}
+                          {(() => {
+                            console.log("RENDERING KEGIATAN PENUTUP:", {
+                              withSpaces: kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"],
+                              withUnderscores: kegiatanPembelajaran["kegiatan_penutup"],
+                              aktivitas: kegiatanPembelajaran?.kegiatan_penutup?.aktivitas
+                            });
+
+                            // Different approach to get activities
+                            let kegiatanPenutupItems = [];
+
+                            // Try the old format first
+                            if (Array.isArray(kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"])) {
+                              kegiatanPenutupItems = kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"];
+                            }
+                            // Then try the new format with aktivitas property
+                            else if (kegiatanPembelajaran?.kegiatan_penutup?.aktivitas &&
+                              Array.isArray(kegiatanPembelajaran.kegiatan_penutup.aktivitas)) {
+                              kegiatanPenutupItems = kegiatanPembelajaran.kegiatan_penutup.aktivitas;
+                            }
+                            // Direct array format (as seen in the debug output)
+                            else if (Array.isArray(kegiatanPembelajaran?.kegiatan_penutup)) {
+                              kegiatanPenutupItems = kegiatanPembelajaran.kegiatan_penutup;
+                            }
+
+                            return kegiatanPenutupItems.map((kegiatan, index) => (
+                              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Aktivitas || kegiatan.aktivitas || kegiatan.deskripsi}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Waktu || kegiatan.waktu}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{kegiatan.Deskripsi || kegiatan.deskripsi}</td>
+                              </tr>
+                            ));
+                          })()}
                         </tbody>
                       </table>
                     </div>
@@ -883,12 +1178,12 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Teori:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Bahan Ajar"]?.["Teori"]}</p>
+                        <p className="text-gray-700">{materiAssessment?.["Bahan Ajar"]?.["Teori"] || materiAssessment?.["bahan_ajar"]?.["teori"]}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Contoh Kontekstual:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Bahan Ajar"]?.["Contoh Kontekstual"]}</p>
+                        <p className="text-gray-700">{materiAssessment?.["Bahan Ajar"]?.["Contoh Kontekstual"] || materiAssessment?.["bahan_ajar"]?.["materi_linguistik"]?.["contoh_kontekstual"]}</p>
                       </div>
                     </div>
                   </div>
@@ -903,17 +1198,17 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Aktivitas:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Aktivitas"]}</p>
+                        <p className="text-gray-700">{materiAssessment?.["Remedial"]?.["Aktivitas"] || materiAssessment?.["remedial"]?.["aktivitas"]}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Strategi Intervensi:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Strategi Intervensi"]}</p>
+                        <p className="text-gray-700">{materiAssessment?.["Remedial"]?.["Strategi Intervensi"] || materiAssessment?.["remedial"]?.["strategi_intervensi"]}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Instrumen Penilaian:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Remedial"]?.["Instrumen Penilaian"]}</p>
+                        <p className="text-gray-700">{materiAssessment?.["Remedial"]?.["Instrumen Penilaian"] || materiAssessment?.["remedial"]?.["instrumen_penilaian"]}</p>
                       </div>
                     </div>
                   </div>
@@ -929,15 +1224,22 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Aktivitas:</h5>
                         <ul className="list-disc pl-5 space-y-1">
-                          {data.rpp["MATERI DAN ASSESSMENT"]["Pengayaan"]["Aktivitas"]?.map((aktivitas, index) => (
-                            <li key={index} className="text-gray-700">{aktivitas}</li>
-                          ))}
+                          {(() => {
+                            const aktivitas = materiAssessment?.["Pengayaan"]?.["Aktivitas"] || materiAssessment?.["pengayaan"]?.["aktivitas"] || [];
+
+                            if (Array.isArray(aktivitas)) {
+                              return aktivitas.map((item, index) => (
+                                <li key={index} className="text-gray-700">{safeRender(item)}</li>
+                              ));
+                            }
+                            return null;
+                          })()}
                         </ul>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Produk/Output:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]["Pengayaan"]["Produk/Output"]}</p>
+                        <p className="text-gray-700">{safeRender(materiAssessment?.["Pengayaan"]?.["Produk/Output"] || materiAssessment?.["pengayaan"]?.["produk_output"])}</p>
                       </div>
                     </div>
                   </div>
@@ -952,16 +1254,25 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Instrumen:</h5>
-                        {data.rpp["MATERI DAN ASSESSMENT"]["Assessment"]["Instrumen"]?.map((instrumen, index) => (
-                          <div key={index} className="mb-4">
-                            <p className="font-medium text-gray-700">{instrumen.Jenis}:</p>
-                            <ul className="list-decimal pl-5 space-y-1 mt-2">
-                              {instrumen.Soal?.map((soal, soalIndex) => (
-                                <li key={soalIndex} className="text-gray-700">{soal}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
+                        {(() => {
+                          const instrumen = materiAssessment?.["Assessment"]?.["Instrumen"] ||
+                            (materiAssessment?.["assessment"]?.["penilaian_pengetahuan"] ?
+                              [{
+                                Jenis: "Tes tertulis",
+                                Soal: materiAssessment?.["assessment"]?.["penilaian_pengetahuan"]?.["instrumen_penilaian"] || []
+                              }] : []) || [];
+
+                          return instrumen.map((instrumen, index) => (
+                            <div key={index} className="mb-4">
+                              <p className="font-medium text-gray-700">{safeRender(instrumen.Jenis || instrumen.jenis)}:</p>
+                              <ul className="list-decimal pl-5 space-y-1 mt-2">
+                                {Array.isArray(instrumen.Soal || instrumen.soal) && (instrumen.Soal || instrumen.soal).map((soal, soalIndex) => (
+                                  <li key={soalIndex} className="text-gray-700">{safeRender(soal)}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          ));
+                        })()}
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
@@ -969,29 +1280,168 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         <div className="space-y-2">
                           <p className="font-medium text-gray-700">Aspek:</p>
                           <ul className="list-disc pl-5 space-y-1">
-                            {data.rpp["MATERI DAN ASSESSMENT"]["Assessment"]["Rubrik Penilaian"]?.["Aspek"]?.map((aspek, index) => (
-                              <li key={index} className="text-gray-700">{aspek}</li>
-                            ))}
+                            {(() => {
+                              const aspekArray = materiAssessment?.["Assessment"]?.["Rubrik Penilaian"]?.["Aspek"] || materiAssessment?.["assessment"]?.["rubrik_penilaian"] || [];
+
+                              if (Array.isArray(aspekArray)) {
+                                return aspekArray.map((aspek, index) => (
+                                  <li key={index} className="text-gray-700">{safeRender(aspek)}</li>
+                                ));
+                              }
+                              return null;
+                            })()}
                           </ul>
                         </div>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Pedoman Penskoran:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Pedoman Penskoran"]}</p>
+                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Pedoman Penskoran"] || materiAssessment?.["assessment"]?.["pedoman_penskoran"])}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Interpretasi Hasil:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Interpretasi Hasil"]}</p>
+                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Interpretasi Hasil"] || materiAssessment?.["assessment"]?.["interpretasi_hasil"])}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Strategi Umpan Balik:</h5>
-                        <p className="text-gray-700">{data.rpp["MATERI DAN ASSESSMENT"]?.["Assessment"]?.["Strategi Umpan Balik"]}</p>
+                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Strategi Umpan Balik"] || materiAssessment?.["assessment"]?.["strategi_umpan_balik"])}</p>
                       </div>
                     </div>
                   </div>
+
+                  {/* Additional Assessment Sections - Special handling for complex objects */}
+                  {materiAssessment?.["assessment"]?.["penilaian_keterampilan_mengucapkan"] && (
+                    <div className="bg-gray-50 p-4 rounded-xl">
+                      <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Mengucapkan:</h5>
+                      {(() => {
+                        const penilaian = materiAssessment?.["assessment"]?.["penilaian_keterampilan_mengucapkan"];
+
+                        // Render rubrik if available as a table
+                        if (penilaian.rubrik && Array.isArray(penilaian.rubrik)) {
+                          return (
+                            <div className="overflow-x-auto">
+                              <table className="min-w-full bg-white rounded-xl overflow-hidden">
+                                <thead className="bg-gray-50">
+                                  <tr>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aspek</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skor</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                  {penilaian.rubrik.map((item, index) => (
+                                    <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                      <td className="px-4 py-3 text-sm text-gray-700">{item.no}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-700">{item.aspek}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-700">{item.deskripsi}</td>
+                                      <td className="px-4 py-3 text-sm text-gray-700">{item.skor}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          );
+                        }
+
+                        // Render any other properties as key-value pairs
+                        return (
+                          <div className="space-y-2">
+                            {Object.entries(penilaian).map(([key, value]) => {
+                              if (key !== 'rubrik') {
+                                return (
+                                  <div key={key}>
+                                    <p className="font-medium text-gray-700">{key}:</p>
+                                    <p className="text-gray-700">{safeRender(value)}</p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {materiAssessment?.["assessment"]?.["penilaian_keterampilan_menulis"] && (
+                    <div className="bg-gray-50 p-4 rounded-xl">
+                      <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Menulis:</h5>
+                      {(() => {
+                        const penilaian = materiAssessment?.["assessment"]?.["penilaian_keterampilan_menulis"];
+
+                        return (
+                          <div className="space-y-4">
+                            {/* Teknik Penilaian */}
+                            {penilaian.teknik_penilaian && (
+                              <div>
+                                <p className="font-medium text-gray-700">Teknik Penilaian:</p>
+                                <p className="text-gray-700">{penilaian.teknik_penilaian}</p>
+                              </div>
+                            )}
+
+                            {/* Bentuk Instrumen */}
+                            {penilaian.bentuk_instrumen && (
+                              <div>
+                                <p className="font-medium text-gray-700">Bentuk Instrumen:</p>
+                                <p className="text-gray-700">{penilaian.bentuk_instrumen}</p>
+                              </div>
+                            )}
+
+                            {/* Instrumen Penilaian */}
+                            {penilaian.instrumen_penilaian && (
+                              <div>
+                                <p className="font-medium text-gray-700">Instrumen Penilaian:</p>
+                                <p className="text-gray-700">{penilaian.instrumen_penilaian}</p>
+                              </div>
+                            )}
+
+                            {/* Rubrik Penilaian */}
+                            {penilaian.rubrik_penilaian && (
+                              <div>
+                                <p className="font-medium text-gray-700">Rubrik Penilaian:</p>
+                                {/* Kriteria */}
+                                {penilaian.rubrik_penilaian.kriteria && Array.isArray(penilaian.rubrik_penilaian.kriteria) && (
+                                  <div className="mt-2">
+                                    <p className="text-sm font-medium text-gray-700">Kriteria:</p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                      {penilaian.rubrik_penilaian.kriteria.map((kriteria, index) => (
+                                        <li key={index} className="text-gray-700">{kriteria}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+
+                                {/* Skor */}
+                                {penilaian.rubrik_penilaian.skor && typeof penilaian.rubrik_penilaian.skor === 'object' && (
+                                  <div className="mt-2">
+                                    <p className="text-sm font-medium text-gray-700">Skor:</p>
+                                    <div className="pl-5">
+                                      {Object.entries(penilaian.rubrik_penilaian.skor).map(([key, value]) => (
+                                        <p key={key} className="text-gray-700">
+                                          <span className="font-medium">{key}:</span> {value}
+                                        </p>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Pedoman Penskoran */}
+                                {penilaian.rubrik_penilaian.pedoman_penskoran && (
+                                  <div className="mt-2">
+                                    <p className="text-sm font-medium text-gray-700">Pedoman Penskoran:</p>
+                                    <p className="text-gray-700 pl-5">{penilaian.rubrik_penilaian.pedoman_penskoran}</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
