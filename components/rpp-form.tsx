@@ -181,7 +181,6 @@ export function RPPForm({ onSubmit }: { onSubmit: (data: z.infer<typeof formSche
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true)
     try {
-      console.log(values)
       onSubmit(values)
       toast({
         title: "Mengirim Data RPP",

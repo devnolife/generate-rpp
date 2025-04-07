@@ -28,6 +28,7 @@ import {
   CheckSquare,
   Check,
   Grid3X3,
+  ClipboardCheck,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { jsPDF } from "jspdf"
@@ -235,11 +236,10 @@ interface HasilRPPProps {
   onGenerateKisiKisi: () => void
 }
 
-// Tambahkan prop onGenerateKisiKisi
-export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
-  console.log("Data hasil RPP", data);
 
-  // Helper function to safely convert any value to a renderable format
+export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
+
+
   const safeRender = (value: any): React.ReactNode => {
     if (value === null || value === undefined) {
       return null;
@@ -258,7 +258,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       ));
     }
 
-    // If it's an object, convert to string representation
+
     return JSON.stringify(value);
   };
 
@@ -281,7 +281,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
   }
 
   const handlePrint = () => {
-    // Buka semua bagian sebelum mencetak
+
     const allExpanded = Object.keys(expandedSections).reduce(
       (acc, key) => {
         acc[key] = true
@@ -298,17 +298,16 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       materiAssessment: true
     })
 
-    // Berikan waktu untuk render sebelum mencetak
+
     setTimeout(() => {
       window.print()
     }, 500)
   }
 
-  // Fungsi untuk mengunduh sebagai PDF
+
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return
 
-    // Buka semua bagian sebelum mengunduh
     const allExpanded = Object.keys(expandedSections).reduce(
       (acc, key) => {
         acc[key] = true
@@ -325,7 +324,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
       materiAssessment: true
     })
 
-    // Berikan waktu untuk render sebelum mengunduh
+
     setTimeout(async () => {
       try {
         toast({
@@ -337,7 +336,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
         if (!content) return
 
         const canvas = await html2canvas(content, {
-          scale: 1.5, // Meningkatkan kualitas
+          scale: 1.5,
           useCORS: true,
           logging: false,
           backgroundColor: "#ffffff",
@@ -360,7 +359,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
 
         pdf.addImage(imgData, "JPEG", imgX, imgY, imgWidth * ratio, imgHeight * ratio)
 
-        // Jika konten terlalu panjang, tambahkan halaman baru
+
         const contentHeight = imgHeight * ratio
         let heightLeft = contentHeight - pdfHeight + imgY
         let position = pdfHeight
@@ -372,7 +371,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
           position += pdfHeight
         }
 
-        // Unduh PDF
+
         const fileName = `RPP_${data?.rpp["IDENTITAS RPP"]["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}_${data?.rpp["IDENTITAS RPP"]["Kelas"] || 'Kelas'}_${new Date().toISOString().split("T")[0]}.pdf`
         pdf.save(fileName)
 
@@ -392,11 +391,11 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     }, 500)
   }
 
-  // Fungsi untuk berbagi
+
   const handleShare = async () => {
     setIsSharing(true)
     try {
-      // Jika Web Share API tersedia
+
       if (navigator.share) {
         await navigator.share({
           title: `RPP ${data?.rpp["IDENTITAS RPP"]["Mata Pelajaran"]?.split(" ")[0] || 'Dokumen'}`,
@@ -405,7 +404,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
         })
         setIsSharing(false)
       } else {
-        // Fallback: salin URL ke clipboard
+
         await navigator.clipboard.writeText(window.location.href)
         setShareSuccess(true)
         setTimeout(() => {
@@ -445,7 +444,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     )
   }
 
-  // Make sure data and data.rpp are not null before proceeding
+
   if (!data.rpp) {
     return (
       <div className="p-12 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-center">
@@ -460,32 +459,11 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     )
   }
 
-  // Support both formats - with spaces or with underscores
+
   const identitas = data.rpp["IDENTITAS RPP"] || data.rpp["IDENTITAS_RPP"] || {}
   const komponenPembelajaran = data.rpp["KOMPONEN PEMBELAJARAN"] || data.rpp["KOMPONEN_PEMBELAJARAN"] || {}
   const kegiatanPembelajaran = data.rpp["KEGIATAN PEMBELAJARAN"] || data.rpp["KEGIATAN_PEMBELAJARAN"] || {}
   const materiAssessment = data.rpp["MATERI DAN ASSESSMENT"] || data.rpp["MATERI_DAN_ASSESSMENT"] || {}
-
-  // Debug logs for troubleshooting
-  console.log("---- DEBUG RPP DATA ----");
-  console.log("RAW RPP STRUCTURE:", Object.keys(data.rpp));
-  console.log("TUJUAN PEMBELAJARAN:", {
-    withSpaces: data.rpp["KOMPONEN PEMBELAJARAN"]?.["Tujuan Pembelajaran"],
-    withUnderscores: data.rpp["KOMPONEN_PEMBELAJARAN"]?.["tujuan_pembelajaran"],
-    mergedComponent: komponenPembelajaran["Tujuan Pembelajaran"] || komponenPembelajaran["tujuan_pembelajaran"]
-  });
-  console.log("SARANA PRASARANA:", {
-    withSpaces: data.rpp["KOMPONEN PEMBELAJARAN"]?.["Sarana Prasarana"],
-    withUnderscores: data.rpp["KOMPONEN_PEMBELAJARAN"]?.["sarana_prasarana"],
-    mergedComponent: komponenPembelajaran["Sarana Prasarana"] || komponenPembelajaran["sarana_prasarana"]
-  });
-  console.log("KEGIATAN PEMBELAJARAN STRUCTURE:", {
-    rawObject: data.rpp["KEGIATAN PEMBELAJARAN"] || data.rpp["KEGIATAN_PEMBELAJARAN"],
-    kegiatanAwal: kegiatanPembelajaran["Kegiatan Awal (15 Menit)"] || kegiatanPembelajaran["kegiatan_awal"],
-    kegiatanInti: kegiatanPembelajaran["Kegiatan Inti (90 Menit)"] || kegiatanPembelajaran["kegiatan_inti"],
-    kegiatanPenutup: kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"] || kegiatanPembelajaran["kegiatan_penutup"]
-  });
-  console.log("---- END DEBUG ----");
 
   const formatDate = () => {
     if (!data.created_at) return "Hari ini"
@@ -497,7 +475,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
     }).format(date)
   }
 
-  // Tambahkan tombol di bagian bawah komponen
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -703,21 +681,15 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="list-disc pl-5 space-y-2">
                         {(() => {
-                          console.log("RENDERING TUJUAN:", komponenPembelajaran["Tujuan Pembelajaran"] || komponenPembelajaran["tujuan_pembelajaran"]);
-
-                          // Different approach to get tujuan pembelajaran
                           let tujuanArray = [];
-
-                          // Try the old format first
                           if (Array.isArray(komponenPembelajaran?.["Tujuan Pembelajaran"])) {
                             tujuanArray = komponenPembelajaran?.["Tujuan Pembelajaran"];
                           }
-                          // Then try the new format
                           else if (Array.isArray(komponenPembelajaran?.tujuan_pembelajaran)) {
                             tujuanArray = komponenPembelajaran.tujuan_pembelajaran;
                           }
 
-                          // Handle different formats
+
                           if (tujuanArray.length > 0) {
                             return tujuanArray.map((tujuan, index) => (
                               <li key={index} className="text-gray-700">
@@ -794,20 +766,17 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="bg-gray-50 p-4 rounded-xl">
                       <ul className="list-disc pl-5 space-y-1">
                         {(() => {
-                          console.log("RENDERING SARANA:", komponenPembelajaran["Sarana Prasarana"] || komponenPembelajaran["sarana_prasarana"]);
-
-                          // Different approach to get sarana prasarana
                           let sarana = [];
 
-                          // Try the old format first
+
                           if (Array.isArray(komponenPembelajaran?.["Sarana Prasarana"])) {
                             sarana = komponenPembelajaran?.["Sarana Prasarana"];
                           }
-                          // Then try the new format with array
+
                           else if (Array.isArray(komponenPembelajaran?.sarana_prasarana)) {
                             sarana = komponenPembelajaran.sarana_prasarana;
                           }
-                          // Handle string format (comma-separated)
+
                           else if (typeof komponenPembelajaran?.["Sarana Prasarana"] === 'string') {
                             sarana = komponenPembelajaran?.["Sarana Prasarana"].split(',').map(item => item.trim());
                           }
@@ -815,7 +784,7 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                             sarana = komponenPembelajaran.sarana_prasarana.split(',').map(item => item.trim());
                           }
 
-                          // Handle different formats
+
                           if (sarana.length > 0) {
                             return sarana.map((item, index) => (
                               <li key={index} className="text-gray-700">{item}</li>
@@ -957,25 +926,19 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                           {(() => {
-                            console.log("RENDERING KEGIATAN AWAL:", {
-                              withSpaces: kegiatanPembelajaran["Kegiatan Awal (15 Menit)"],
-                              withUnderscores: kegiatanPembelajaran["kegiatan_awal"],
-                              aktivitas: kegiatanPembelajaran?.kegiatan_awal?.aktivitas
-                            });
 
-                            // Different approach to get activities
                             let kegiatanAwalItems = [];
 
-                            // Try the old format first
+
                             if (Array.isArray(kegiatanPembelajaran["Kegiatan Awal (15 Menit)"])) {
                               kegiatanAwalItems = kegiatanPembelajaran["Kegiatan Awal (15 Menit)"];
                             }
-                            // Then try the new format with aktivitas property
+
                             else if (kegiatanPembelajaran?.kegiatan_awal?.aktivitas &&
                               Array.isArray(kegiatanPembelajaran.kegiatan_awal.aktivitas)) {
                               kegiatanAwalItems = kegiatanPembelajaran.kegiatan_awal.aktivitas;
                             }
-                            // Direct array format (as seen in the debug output)
+
                             else if (Array.isArray(kegiatanPembelajaran?.kegiatan_awal)) {
                               kegiatanAwalItems = kegiatanPembelajaran.kegiatan_awal;
                             }
@@ -1027,25 +990,18 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                           {(() => {
-                            console.log("RENDERING KEGIATAN INTI:", {
-                              withSpaces: kegiatanPembelajaran["Kegiatan Inti (90 Menit)"],
-                              withUnderscores: kegiatanPembelajaran["kegiatan_inti"],
-                              aktivitas: kegiatanPembelajaran?.kegiatan_inti?.aktivitas
-                            });
 
-                            // Different approach to get activities
                             let kegiatanIntiItems = [];
 
-                            // Try the old format first
                             if (Array.isArray(kegiatanPembelajaran["Kegiatan Inti (90 Menit)"])) {
                               kegiatanIntiItems = kegiatanPembelajaran["Kegiatan Inti (90 Menit)"];
                             }
-                            // Then try the new format with aktivitas property
+
                             else if (kegiatanPembelajaran?.kegiatan_inti?.aktivitas &&
                               Array.isArray(kegiatanPembelajaran.kegiatan_inti.aktivitas)) {
                               kegiatanIntiItems = kegiatanPembelajaran.kegiatan_inti.aktivitas;
                             }
-                            // Direct array format (as seen in the debug output)
+
                             else if (Array.isArray(kegiatanPembelajaran?.kegiatan_inti)) {
                               kegiatanIntiItems = kegiatanPembelajaran.kegiatan_inti;
                             }
@@ -1095,25 +1051,19 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                           {(() => {
-                            console.log("RENDERING KEGIATAN PENUTUP:", {
-                              withSpaces: kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"],
-                              withUnderscores: kegiatanPembelajaran["kegiatan_penutup"],
-                              aktivitas: kegiatanPembelajaran?.kegiatan_penutup?.aktivitas
-                            });
 
-                            // Different approach to get activities
                             let kegiatanPenutupItems = [];
 
-                            // Try the old format first
+
                             if (Array.isArray(kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"])) {
                               kegiatanPenutupItems = kegiatanPembelajaran["Kegiatan Penutup (15 Menit)"];
                             }
-                            // Then try the new format with aktivitas property
+
                             else if (kegiatanPembelajaran?.kegiatan_penutup?.aktivitas &&
                               Array.isArray(kegiatanPembelajaran.kegiatan_penutup.aktivitas)) {
                               kegiatanPenutupItems = kegiatanPembelajaran.kegiatan_penutup.aktivitas;
                             }
-                            // Direct array format (as seen in the debug output)
+
                             else if (Array.isArray(kegiatanPembelajaran?.kegiatan_penutup)) {
                               kegiatanPenutupItems = kegiatanPembelajaran.kegiatan_penutup;
                             }
@@ -1223,23 +1173,35 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-xl">
                         <h5 className="font-medium text-gray-700 mb-2">Aktivitas:</h5>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {(() => {
-                            const aktivitas = materiAssessment?.["Pengayaan"]?.["Aktivitas"] || materiAssessment?.["pengayaan"]?.["aktivitas"] || [];
+                        {(() => {
+                          const aktivitas = materiAssessment?.["pengayaan"]?.["aktivitas"] || [];
 
-                            if (Array.isArray(aktivitas)) {
-                              return aktivitas.map((item, index) => (
-                                <li key={index} className="text-gray-700">{safeRender(item)}</li>
-                              ));
-                            }
-                            return null;
-                          })()}
-                        </ul>
+                          if (Array.isArray(aktivitas)) {
+                            return (
+                              <div className="space-y-3">
+                                {aktivitas.map((item, index) => (
+                                  <div key={index} className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                                    <div className="space-y-2">
+                                      <div className="flex items-center space-x-2">
+                                        <div className="h-2 w-2 bg-primary rounded-full"></div>
+                                        <p className="font-medium text-gray-800 ml-2">Aktivitas {index + 1}</p>
+                                      </div>
+                                      <p className="text-gray-700 ml-4">{safeRender(item)}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Produk/Output:</h5>
-                        <p className="text-gray-700">{safeRender(materiAssessment?.["Pengayaan"]?.["Produk/Output"] || materiAssessment?.["pengayaan"]?.["produk_output"])}</p>
+                        <h5 className="font-medium text-gray-700 mb-2">Output:</h5>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                          <p className="text-gray-700">{safeRender(materiAssessment?.["pengayaan"]?.["output"])}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1247,201 +1209,330 @@ export function HasilRPP({ data, onGenerateKisiKisi }: HasilRPPProps) {
                   {/* Assessment */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary" />
+                      <ClipboardCheck className="h-5 w-5 text-primary" />
                       <h4 className="font-medium text-gray-800">Assessment</h4>
                     </div>
 
                     <div className="space-y-4">
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Instrumen:</h5>
-                        {(() => {
-                          const instrumen = materiAssessment?.["Assessment"]?.["Instrumen"] ||
-                            (materiAssessment?.["assessment"]?.["penilaian_pengetahuan"] ?
-                              [{
-                                Jenis: "Tes tertulis",
-                                Soal: materiAssessment?.["assessment"]?.["penilaian_pengetahuan"]?.["instrumen_penilaian"] || []
-                              }] : []) || [];
+                      {/* Penilaian Pengetahuan */}
+                      {materiAssessment?.["assessment"]?.["pengetahuan"] && (
+                        <div className="bg-gray-50 p-4 rounded-xl">
+                          <h5 className="font-medium text-gray-700 mb-2">Penilaian Pengetahuan:</h5>
+                          <div className="space-y-3">
+                            {materiAssessment["assessment"]["pengetahuan"]["instrumen_penilaian"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Instrumen Penilaian:</p>
+                                <div className="mt-2 space-y-2">
+                                  {Array.isArray(materiAssessment["assessment"]["pengetahuan"]["instrumen_penilaian"]) &&
+                                    materiAssessment["assessment"]["pengetahuan"]["instrumen_penilaian"].map((soal, index) => (
+                                      <div key={index} className="flex items-start">
+                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-primary-lightest flex items-center justify-center mr-3">
+                                          <span className="text-primary font-medium">{index + 1}</span>
+                                        </div>
+                                        <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm flex-1">
+                                          <p className="text-gray-700">{safeRender(soal)}</p>
+                                        </div>
+                                      </div>
+                                    ))
+                                  }
+                                </div>
+                              </div>
+                            )}
 
-                          return instrumen.map((instrumen, index) => (
-                            <div key={index} className="mb-4">
-                              <p className="font-medium text-gray-700">{safeRender(instrumen.Jenis || instrumen.jenis)}:</p>
-                              <ul className="list-decimal pl-5 space-y-1 mt-2">
-                                {Array.isArray(instrumen.Soal || instrumen.soal) && (instrumen.Soal || instrumen.soal).map((soal, soalIndex) => (
-                                  <li key={soalIndex} className="text-gray-700">{safeRender(soal)}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          ));
-                        })()}
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Rubrik Penilaian:</h5>
-                        <div className="space-y-2">
-                          <p className="font-medium text-gray-700">Aspek:</p>
-                          <ul className="list-disc pl-5 space-y-1">
-                            {(() => {
-                              const aspekArray = materiAssessment?.["Assessment"]?.["Rubrik Penilaian"]?.["Aspek"] || materiAssessment?.["assessment"]?.["rubrik_penilaian"] || [];
-
-                              if (Array.isArray(aspekArray)) {
-                                return aspekArray.map((aspek, index) => (
-                                  <li key={index} className="text-gray-700">{safeRender(aspek)}</li>
-                                ));
-                              }
-                              return null;
-                            })()}
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Pedoman Penskoran:</h5>
-                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Pedoman Penskoran"] || materiAssessment?.["assessment"]?.["pedoman_penskoran"])}</p>
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Interpretasi Hasil:</h5>
-                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Interpretasi Hasil"] || materiAssessment?.["assessment"]?.["interpretasi_hasil"])}</p>
-                      </div>
-
-                      <div className="bg-gray-50 p-4 rounded-xl">
-                        <h5 className="font-medium text-gray-700 mb-2">Strategi Umpan Balik:</h5>
-                        <p className="text-gray-700">{safeRender(materiAssessment?.["Assessment"]?.["Strategi Umpan Balik"] || materiAssessment?.["assessment"]?.["strategi_umpan_balik"])}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Additional Assessment Sections - Special handling for complex objects */}
-                  {materiAssessment?.["assessment"]?.["penilaian_keterampilan_mengucapkan"] && (
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                      <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Mengucapkan:</h5>
-                      {(() => {
-                        const penilaian = materiAssessment?.["assessment"]?.["penilaian_keterampilan_mengucapkan"];
-
-                        // Render rubrik if available as a table
-                        if (penilaian.rubrik && Array.isArray(penilaian.rubrik)) {
-                          return (
-                            <div className="overflow-x-auto">
-                              <table className="min-w-full bg-white rounded-xl overflow-hidden">
-                                <thead className="bg-gray-50">
-                                  <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aspek</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skor</th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                  {penilaian.rubrik.map((item, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                      <td className="px-4 py-3 text-sm text-gray-700">{item.no}</td>
-                                      <td className="px-4 py-3 text-sm text-gray-700">{item.aspek}</td>
-                                      <td className="px-4 py-3 text-sm text-gray-700">{item.deskripsi}</td>
-                                      <td className="px-4 py-3 text-sm text-gray-700">{item.skor}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          );
-                        }
-
-                        // Render any other properties as key-value pairs
-                        return (
-                          <div className="space-y-2">
-                            {Object.entries(penilaian).map(([key, value]) => {
-                              if (key !== 'rubrik') {
-                                return (
-                                  <div key={key}>
-                                    <p className="font-medium text-gray-700">{key}:</p>
-                                    <p className="text-gray-700">{safeRender(value)}</p>
+                            {materiAssessment["assessment"]["pengetahuan"]["rubrik_penilaian"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Rubrik Penilaian:</p>
+                                <div className="mt-2 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                  <div className="mb-3 border-b border-gray-100 pb-2">
+                                    <p className="text-gray-700">
+                                      <span className="font-medium">Kriteria:</span> {materiAssessment["assessment"]["pengetahuan"]["rubrik_penilaian"]["kriteria"]}
+                                    </p>
                                   </div>
-                                );
-                              }
-                              return null;
-                            })}
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Skor:</p>
+                                    <div className="space-y-2 ml-2">
+                                      {Object.entries(materiAssessment["assessment"]["pengetahuan"]["rubrik_penilaian"]["skor"]).map(([key, value]) => (
+                                        <div key={key} className="flex items-center bg-gray-50 p-2 rounded">
+                                          <div className={`w-3 h-3 rounded-full ${key.includes('benar') ? 'bg-green-500' : 'bg-red-500'} mr-2`}></div>
+                                          <p className="text-gray-700">
+                                            <span className="font-medium">
+                                              {key.includes('benar') ? 'Jawaban Benar' : 'Jawaban Salah'}:
+                                            </span> {String(value)}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        );
-                      })()}
-                    </div>
-                  )}
+                        </div>
+                      )}
 
-                  {materiAssessment?.["assessment"]?.["penilaian_keterampilan_menulis"] && (
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                      <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Menulis:</h5>
-                      {(() => {
-                        const penilaian = materiAssessment?.["assessment"]?.["penilaian_keterampilan_menulis"];
-
-                        return (
-                          <div className="space-y-4">
+                      {/* Penilaian Keterampilan Mengucapkan */}
+                      {materiAssessment?.["assessment"]?.["keterampilan_mengucapkan"] && (
+                        <div className="bg-gray-50 p-4 rounded-xl">
+                          <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Mengucapkan:</h5>
+                          <div className="space-y-3">
                             {/* Teknik Penilaian */}
-                            {penilaian.teknik_penilaian && (
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["teknik_penilaian"] && (
                               <div>
                                 <p className="font-medium text-gray-700">Teknik Penilaian:</p>
-                                <p className="text-gray-700">{penilaian.teknik_penilaian}</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_mengucapkan"]["teknik_penilaian"]}</p>
                               </div>
                             )}
 
                             {/* Bentuk Instrumen */}
-                            {penilaian.bentuk_instrumen && (
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["bentuk_instrumen"] && (
                               <div>
                                 <p className="font-medium text-gray-700">Bentuk Instrumen:</p>
-                                <p className="text-gray-700">{penilaian.bentuk_instrumen}</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_mengucapkan"]["bentuk_instrumen"]}</p>
+                              </div>
+                            )}
+
+                            {/* Kisi-kisi */}
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["kisi_kisi"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Kisi-kisi:</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_mengucapkan"]["kisi_kisi"]}</p>
                               </div>
                             )}
 
                             {/* Instrumen Penilaian */}
-                            {penilaian.instrumen_penilaian && (
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["instrumen_penilaian"] && (
                               <div>
                                 <p className="font-medium text-gray-700">Instrumen Penilaian:</p>
-                                <p className="text-gray-700">{penilaian.instrumen_penilaian}</p>
+                                <ul className="list-decimal pl-5 space-y-1 mt-2">
+                                  {Array.isArray(materiAssessment["assessment"]["keterampilan_mengucapkan"]["instrumen_penilaian"]) &&
+                                    materiAssessment["assessment"]["keterampilan_mengucapkan"]["instrumen_penilaian"].map((soal, index) => (
+                                      <li key={index} className="text-gray-700">{safeRender(soal)}</li>
+                                    ))
+                                  }
+                                </ul>
                               </div>
                             )}
 
                             {/* Rubrik Penilaian */}
-                            {penilaian.rubrik_penilaian && (
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik_penilaian"] && (
                               <div>
                                 <p className="font-medium text-gray-700">Rubrik Penilaian:</p>
-                                {/* Kriteria */}
-                                {penilaian.rubrik_penilaian.kriteria && Array.isArray(penilaian.rubrik_penilaian.kriteria) && (
-                                  <div className="mt-2">
-                                    <p className="text-sm font-medium text-gray-700">Kriteria:</p>
-                                    <ul className="list-disc pl-5 space-y-1">
-                                      {penilaian.rubrik_penilaian.kriteria.map((kriteria, index) => (
-                                        <li key={index} className="text-gray-700">{kriteria}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
-
-                                {/* Skor */}
-                                {penilaian.rubrik_penilaian.skor && typeof penilaian.rubrik_penilaian.skor === 'object' && (
+                                <div className="mt-2">
+                                  <p className="text-gray-700">
+                                    <span className="font-medium">Kriteria:</span> {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik_penilaian"]["kriteria"]}
+                                  </p>
                                   <div className="mt-2">
                                     <p className="text-sm font-medium text-gray-700">Skor:</p>
-                                    <div className="pl-5">
-                                      {Object.entries(penilaian.rubrik_penilaian.skor).map(([key, value]) => (
-                                        <p key={key} className="text-gray-700">
-                                          <span className="font-medium">{key}:</span> {value}
-                                        </p>
-                                      ))}
-                                    </div>
+                                    {Object.entries(materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik_penilaian"]["skor"]).map(([key, value]) => (
+                                      <p key={key} className="text-gray-700">
+                                        <span className="font-medium">{key}:</span> {String(value)}
+                                      </p>
+                                    ))}
                                   </div>
-                                )}
+                                </div>
+                              </div>
+                            )}
 
-                                {/* Pedoman Penskoran */}
-                                {penilaian.rubrik_penilaian.pedoman_penskoran && (
-                                  <div className="mt-2">
-                                    <p className="text-sm font-medium text-gray-700">Pedoman Penskoran:</p>
-                                    <p className="text-gray-700 pl-5">{penilaian.rubrik_penilaian.pedoman_penskoran}</p>
-                                  </div>
-                                )}
+                            {/* Rubrik (old format) */}
+                            {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Rubrik:</p>
+                                <div className="mt-2 space-y-3">
+                                  {/* Handle tabel property */}
+                                  {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"] && (
+                                    <div className="overflow-x-auto">
+                                      <table className="min-w-full border border-gray-200 rounded-lg">
+                                        <thead className="bg-gray-100">
+                                          <tr>
+                                            {Array.isArray(materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"]) &&
+                                              materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"].length > 0 &&
+                                              Object.keys(materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"][0] || {}).map((header, idx) => (
+                                                <th key={idx} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                  {header}
+                                                </th>
+                                              ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                          {Array.isArray(materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"]) &&
+                                            materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["tabel"].map((row, rowIdx) => (
+                                              <tr key={rowIdx} className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                                {Object.values(row).map((cell, cellIdx) => (
+                                                  <td key={cellIdx} className="px-4 py-2 text-sm text-gray-700">
+                                                    {typeof cell === "object" ? JSON.stringify(cell) : String(cell)}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                            ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
+
+                                  {/* Handle penentuan_nilai property */}
+                                  {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["penentuan_nilai"] && (
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                                      <p className="font-medium text-gray-700">Penentuan Nilai:</p>
+                                      <div className="mt-1 text-sm text-gray-700 italic">
+                                        {materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]["penentuan_nilai"]}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Display other properties */}
+                                  {Object.entries(materiAssessment["assessment"]["keterampilan_mengucapkan"]["rubrik"]).map(([key, value]) => {
+                                    if (key !== "tabel" && key !== "penentuan_nilai") {
+                                      return (
+                                        <p key={key} className="text-gray-700">
+                                          <span className="font-medium">{key}:</span> {String(value)}
+                                        </p>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                                </div>
                               </div>
                             )}
                           </div>
-                        );
-                      })()}
+                        </div>
+                      )}
+
+                      {/* Penilaian Keterampilan Menulis */}
+                      {materiAssessment?.["assessment"]?.["keterampilan_menulis"] && (
+                        <div className="bg-gray-50 p-4 rounded-xl">
+                          <h5 className="font-medium text-gray-700 mb-2">Penilaian Keterampilan Menulis:</h5>
+                          <div className="space-y-3">
+                            {/* Teknik Penilaian */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["teknik_penilaian"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Teknik Penilaian:</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_menulis"]["teknik_penilaian"]}</p>
+                              </div>
+                            )}
+
+                            {/* Bentuk Instrumen */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["bentuk_instrumen"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Bentuk Instrumen:</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_menulis"]["bentuk_instrumen"]}</p>
+                              </div>
+                            )}
+
+                            {/* Kisi-kisi */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["kisi_kisi"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Kisi-kisi:</p>
+                                <p className="text-gray-700">{materiAssessment["assessment"]["keterampilan_menulis"]["kisi_kisi"]}</p>
+                              </div>
+                            )}
+
+                            {/* Instrumen Penilaian */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["instrumen_penilaian"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Instrumen Penilaian:</p>
+                                <ul className="list-decimal pl-5 space-y-1 mt-2">
+                                  {Array.isArray(materiAssessment["assessment"]["keterampilan_menulis"]["instrumen_penilaian"]) &&
+                                    materiAssessment["assessment"]["keterampilan_menulis"]["instrumen_penilaian"].map((soal, index) => (
+                                      <li key={index} className="text-gray-700">{safeRender(soal)}</li>
+                                    ))
+                                  }
+                                </ul>
+                              </div>
+                            )}
+
+                            {/* Rubrik Penilaian */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik_penilaian"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Rubrik Penilaian:</p>
+                                <div className="mt-2">
+                                  <p className="text-gray-700">
+                                    <span className="font-medium">Kriteria:</span> {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik_penilaian"]["kriteria"]}
+                                  </p>
+                                  <div className="mt-2">
+                                    <p className="text-sm font-medium text-gray-700">Skor:</p>
+                                    {Object.entries(materiAssessment["assessment"]["keterampilan_menulis"]["rubrik_penilaian"]["skor"]).map(([key, value]) => (
+                                      <p key={key} className="text-gray-700">
+                                        <span className="font-medium">{key}:</span> {String(value)}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Rubrik (old format) */}
+                            {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"] && (
+                              <div>
+                                <p className="font-medium text-gray-700">Rubrik:</p>
+                                <div className="mt-2 space-y-3">
+                                  {/* Handle tabel property */}
+                                  {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"] && (
+                                    <div className="overflow-x-auto">
+                                      <table className="min-w-full border border-gray-200 rounded-lg">
+                                        <thead className="bg-gray-100">
+                                          <tr>
+                                            {Array.isArray(materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"]) &&
+                                              materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"].length > 0 &&
+                                              Object.keys(materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"][0] || {}).map((header, idx) => (
+                                                <th key={idx} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                  {header}
+                                                </th>
+                                              ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                          {Array.isArray(materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"]) &&
+                                            materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["tabel"].map((row, rowIdx) => (
+                                              <tr key={rowIdx} className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                                {Object.values(row).map((cell, cellIdx) => (
+                                                  <td key={cellIdx} className="px-4 py-2 text-sm text-gray-700">
+                                                    {typeof cell === "object" ? JSON.stringify(cell) : String(cell)}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                            ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
+
+                                  {/* Handle penentuan_nilai property */}
+                                  {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["penentuan_nilai"] && (
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                                      <p className="font-medium text-gray-700">Penentuan Nilai:</p>
+                                      <div className="mt-1 text-sm text-gray-700 italic">
+                                        {materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]["penentuan_nilai"]}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Display other properties */}
+                                  {Object.entries(materiAssessment["assessment"]["keterampilan_menulis"]["rubrik"]).map(([key, value]) => {
+                                    if (key !== "tabel" && key !== "penentuan_nilai") {
+                                      return (
+                                        <p key={key} className="text-gray-700">
+                                          <span className="font-medium">{key}:</span> {String(value)}
+                                        </p>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Strategi Umpan Balik */}
+                      {materiAssessment?.["assessment"]?.["umpan_balik"] && (
+                        <div className="bg-gray-50 p-4 rounded-xl">
+                          <h5 className="font-medium text-gray-700 mb-2">Strategi Umpan Balik:</h5>
+                          <p className="text-gray-700">{safeRender(materiAssessment["assessment"]["umpan_balik"])}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </motion.div>
             )}
